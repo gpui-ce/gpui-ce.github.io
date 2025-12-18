@@ -1,7 +1,6 @@
 # Build output
 build/
 public/
-content/examples
 
 # Rust
 target/

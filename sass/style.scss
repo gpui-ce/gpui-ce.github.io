@@ -2,8 +2,9 @@
     --text: #EDDAD3;
     --text-muted: #958E99;
     --text-accent: #FBD057;
-    --background: #2F384D;
+    --background: #1A1B25;
     --background-accent: #423841;
+    --border: #000000;
     --highlight: #62FFF1;
 }
 
@@ -20,7 +21,7 @@ html {
 body {
     font-family: "SF Mono", Menlo, Monaco, monospace;
     background: var(--background);
-    color: var(--text);
+    color: var(--text-muted);
     line-height: 1.4;
     padding: 12px;
 }
@@ -108,8 +109,8 @@ ul {
 
 code, pre {
     font-family: "SF Mono", Menlo, Monaco, monospace;
-    font-size: 1rem;
-    background: var(--background-accent);
+    /* font-size: 1rem; */
+    background: color-mix(in srgb, var(--background-accent) 50%, transparent);
 }
 
 code {
@@ -117,10 +118,13 @@ code {
 }
 
 pre {
-    padding: 12px;
+    color: var(--text);
+    padding: 3px 6px;
     overflow-x: auto;
-    border: 1px solid var(--background-accent);
-    margin: 12px 0;
+    border: 1px solid var(--border);
+    border-radius: 4px 3px 11px 5px;
+    display: inline-block;
+    margin: 0 -6px;
 }
 
 .content h2 {

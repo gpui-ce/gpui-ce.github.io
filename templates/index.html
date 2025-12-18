@@ -4,22 +4,25 @@
 <div class="container">
     <header class="header">
         <h1>GPUI Community Edition</h1>
-        <p>A UI framework for Rust. GPU-accelerated, flexbox layout, reactive state.</p>
+        <p>A community fork of <a href="https://www.gpui.rs/">gpui</a>, the fast, productive rust ui framework.
+        </p>
     </header>
 
     <section class="section">
+        <h2>Try it:</h2>
         <pre>gpui = { git = "https://github.com/gpui-ce/gpui-ce" }</pre>
     </section>
 
     <section class="section">
-        <h2>Examples</h2>
-        <ul class="example-list">
-            {% set examples = get_section(path="examples/_index.md") %}
-            {% for page in examples.pages %}
-            <li><a href="{{ page.permalink }}">{{ page.title }}</a></li>
-            {% endfor %}
-        </ul>
-        <p class="run-hint">Run with: <code>cargo run -p gpui --example [name]</code></p>
+        <h2>The plan...</h2>
+        <p>gpui-ce exists as a way for gpui contributors to explore what it would mean to take it futher, without the constraints of supporting, or not breaking Zed.</p>
+        <p>We're still figuring out what that means exactly–over the next few weeks we'll start making plans to share with the community.</p>
+        <p>Regardless, we are excited to start supporting the gpui community better, through better examples, showcases & more.</p>
+    </section>
+
+    <section class="section">
+        <h2>Acknowledgements</h2>
+        <p><a href="https://www.gpui.rs/">gpui</a> was originally created by Nathan Sobo & the <a href="https://zed.dev/">Zed Industries</a> team</p>
     </section>
 
     <section class="section">

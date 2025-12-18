@@ -1,17 +1,17 @@
-# Zola build output
+# Build output
+build/
 public/
 
-# OS files
-.DS_Store
-Thumbs.db
+# Rust
+target/
 
-# Editor files
+# Editor
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
 
-# Generated content (regenerate with ./generate_examples.sh)
-content/examples/*.md
-!content/examples/_index.md
+# OS
+.DS_Store
+Thumbs.db

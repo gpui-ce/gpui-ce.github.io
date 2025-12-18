@@ -10,8 +10,7 @@ build_search_index = true
 generate_feeds = false
 
 [markdown]
-highlight_code = true
-highlight_theme = "base16-ocean-dark"
+highlight_code = false
 smart_punctuation = true
 
 [extra]

@@ -415,3 +415,100 @@ pre {
         text-align: left;
     }
 }
+
+/* Syntax Highlighting (arborium) */
+.learn-content pre code,
+.content pre code {
+    display: block;
+    padding: 12px 16px;
+    overflow-x: auto;
+    line-height: 1.5;
+}
+
+/* Keywords: fn, let, struct, impl, use, pub, etc. */
+.keyword {
+    color: #cba6f7;
+}
+
+/* Functions and methods */
+.function {
+    color: #89b4fa;
+}
+
+/* Types: String, Vec, Option, etc. */
+.type,
+.constructor {
+    color: #f9e2af;
+}
+
+/* Strings */
+.string {
+    color: #a6e3a1;
+}
+
+/* Numbers */
+.number,
+.constant {
+    color: #fab387;
+}
+
+/* Comments */
+.comment {
+    color: #6c7086;
+    font-style: italic;
+}
+
+/* Operators: =, +, -, etc. */
+.operator {
+    color: #89dceb;
+}
+
+/* Punctuation: (), {}, etc. */
+.punctuation {
+    color: #9399b2;
+}
+
+/* Properties/fields */
+.property {
+    color: #89b4fa;
+}
+
+/* Variables */
+.variable {
+    color: #cdd6f4;
+}
+
+/* Macros */
+.macro {
+    color: #89dceb;
+}
+
+/* Attributes/decorators */
+.attribute {
+    color: #f9e2af;
+}
+
+/* Labels */
+.label {
+    color: #f38ba8;
+}
+
+/* Namespace */
+.namespace {
+    color: #f9e2af;
+}
+
+/* Embedded (like in strings) */
+.embedded {
+    color: #cdd6f4;
+}
+
+/* Tags (HTML/XML) */
+.tag {
+    color: #f38ba8;
+}
+
+/* Special */
+.special {
+    color: #f5c2e7;
+}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} — {{ config.title }}{% endblock %}
+
+{% block content %}
+{% set learn_section = get_section(path="learn/_index.md") %}
+<div class="learn-layout">
+    <aside class="learn-sidebar">
+        <h2>Learn GPUI</h2>
+        <ul class="learn-nav">
+            {% for p in learn_section.pages %}
+            <li>
+                <a href="{{ p.permalink }}"{% if current_path == p.path %} class="active"{% endif %}>
+                    {{ p.title }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </aside>
+
+    <main class="learn-content">
+        <header class="header">
+            <h1>{{ page.title }}</h1>
+            {% if page.description %}
+            <p>{{ page.description }}</p>
+            {% endif %}
+        </header>
+
+        <div class="content">
+            {{ page.content | safe }}
+        </div>
+
+        {% if page.earlier or page.later %}
+        <nav class="page-nav">
+            {% if page.earlier %}
+            <a href="{{ page.earlier.permalink }}" class="page-nav-prev">
+                <span>← Previous</span>
+                <strong>{{ page.earlier.title }}</strong>
+            </a>
+            {% else %}
+            <span></span>
+            {% endif %}
+
+            {% if page.later %}
+            <a href="{{ page.later.permalink }}" class="page-nav-next">
+                <span>Next →</span>
+                <strong>{{ page.later.title }}</strong>
+            </a>
+            {% endif %}
+        </nav>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

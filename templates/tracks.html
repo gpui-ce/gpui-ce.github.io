@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} — {{ config.title }}{% endblock %}
+
+{% block content %}
+<div class="container tracks-page">
+    <header class="header">
+        <h1>{{ page.title }}</h1>
+    </header>
+
+    <div class="content tracks-content">
+        {{ page.content | safe }}
+    </div>
+</div>
+
+<style>
+    .tracks-content h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text);
+        margin: 24px 0 8px;
+        padding-top: 16px;
+        border-top: 1px solid var(--background-accent);
+    }
+
+    .tracks-content h3:first-of-type {
+        margin-top: 16px;
+    }
+
+    .tracks-content p {
+        margin-bottom: 12px;
+    }
+
+    .tracks-content ul {
+        list-style: disc;
+        margin-left: 20px;
+        margin-bottom: 12px;
+    }
+
+    .tracks-content li {
+        margin-bottom: 4px;
+        color: var(--text-muted);
+    }
+
+    .tracks-content a {
+        color: var(--highlight);
+    }
+</style>
+{% endblock %}

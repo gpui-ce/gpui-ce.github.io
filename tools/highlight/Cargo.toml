@@ -1,0 +1,22 @@
+[package]
+name = "highlight"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+arborium = { version = "2.3", features = [
+    "lang-rust",
+    "lang-toml",
+    "lang-bash",
+    "lang-javascript",
+    "lang-typescript",
+    "lang-html",
+    "lang-css",
+    "lang-json",
+    "lang-yaml",
+    "lang-markdown",
+] }
+regex = "1"
+walkdir = "2"
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }

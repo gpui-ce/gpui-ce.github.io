@@ -1,0 +1,18 @@
+base_url = "https://gpui-ce.github.io"
+title = "GPUI Community Edition"
+description = "A fast, productive UI framework for Rust"
+default_language = "en"
+
+compile_sass = true
+minify_html = true
+build_search_index = true
+
+generate_feeds = false
+
+[markdown]
+highlight_code = true
+highlight_theme = "base16-ocean-dark"
+smart_punctuation = true
+
+[extra]
+github_repo = "https://github.com/gpui-ce/gpui-ce"

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{{ section.title }} — {{ config.title }}{% endblock %}
+
+{% block content %}
+<section class="section-header">
+    <div class="section-header-inner">
+        <h1>{{ section.title }}</h1>
+        {% if section.description %}
+        <p class="section-description">{{ section.description }}</p>
+        {% endif %}
+    </div>
+</section>
+
+<section class="examples-grid">
+    <div class="examples-grid-inner">
+        {% for page in section.pages %}
+        <a href="{{ page.permalink }}" class="example-card">
+            <h3 class="example-title">{{ page.title }}</h3>
+            {% if page.description %}
+            <p class="example-description">{{ page.description }}</p>
+            {% endif %}
+            <span class="example-link">View example →</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

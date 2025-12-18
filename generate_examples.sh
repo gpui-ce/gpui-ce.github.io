@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# Generate example content pages for the Zola site from GPUI source files
+# Expects gpui-ce repo to be a sibling directory: ../gpui-ce/
+# Run from the repo root: ./generate_examples.sh
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+GPUI_CE_DIR="$SCRIPT_DIR/../gpui-ce"
+EXAMPLES_DIR="$GPUI_CE_DIR/crates/gpui/examples"
+OUTPUT_DIR="$SCRIPT_DIR/content/examples"
+
+# Check that gpui-ce exists as sibling
+if [ ! -d "$EXAMPLES_DIR" ]; then
+    echo "Error: Could not find gpui-ce examples at $EXAMPLES_DIR"
+    echo "Make sure gpui-ce is cloned as a sibling directory."
+    exit 1
+fi
+
+mkdir -p "$OUTPUT_DIR"
+
+# Function to convert snake_case to Title Case
+to_title() {
+    echo "$1" | sed 's/_/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2))}1'
+}
+
+# Function to extract a description from the source file (first doc comment)
+extract_description() {
+    local file="$1"
+    # Try to get the first line comment that looks like a description
+    local desc=$(grep -m1 "^//!" "$file" 2>/dev/null | sed 's/^\/\/! *//' || true)
+    echo "$desc"
+}
+
+echo "Generating example pages from $EXAMPLES_DIR"
+echo ""
+
+count=0
+
+# Generate a markdown file for each example
+for example_file in "$EXAMPLES_DIR"/*.rs; do
+    if [ -f "$example_file" ]; then
+        filename=$(basename "$example_file" .rs)
+        title=$(to_title "$filename")
+        description=$(extract_description "$example_file")
+        output_file="$OUTPUT_DIR/$filename.md"
+        source_path="crates/gpui/examples/$filename.rs"
+
+        # Read the source code
+        source_code=$(cat "$example_file")
+
+        echo "  → $filename"
+
+        cat > "$output_file" << EOF
++++
+title = "$title"
+description = "$description"
+template = "page.html"
+
+[extra]
+run_command = "cargo run -p gpui --example $filename"
+source_file = "$source_path"
++++
+
+## Source Code
+
+\`\`\`rust
+$source_code
+\`\`\`
+EOF
+
+        count=$((count + 1))
+    fi
+done
+
+echo ""
+echo "Generated $count example pages in $OUTPUT_DIR"

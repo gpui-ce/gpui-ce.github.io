@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} — {{ config.title }}{% endblock %}
+
+{% block content %}
+<article class="example-page">
+    <header class="example-header">
+        <div class="example-header-inner">
+            <nav class="breadcrumb">
+                <a href="{{ get_url(path="@/examples/_index.md") }}">Examples</a>
+                <span class="separator">/</span>
+                <span>{{ page.title }}</span>
+            </nav>
+            <h1>{{ page.title }}</h1>
+            {% if page.description %}
+            <p class="example-page-description">{{ page.description }}</p>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="example-content">
+        <div class="example-content-inner">
+            {% if page.extra.run_command %}
+            <div class="run-command">
+                <span class="run-label">Run this example:</span>
+                <code>{{ page.extra.run_command }}</code>
+            </div>
+            {% endif %}
+
+            <div class="example-body">
+                {{ page.content | safe }}
+            </div>
+
+            {% if page.extra.source_file %}
+            <div class="source-link">
+                <a href="{{ config.extra.github_repo }}/blob/main/{{ page.extra.source_file }}" target="_blank" rel="noopener">
+                    View source on GitHub →
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</article>
+{% endblock %}

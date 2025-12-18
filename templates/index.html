@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}{{ config.title }} — A fast, productive UI framework for Rust{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-inner">
+        <h1 class="hero-title">
+            Build native UIs<br>
+            <span class="highlight">with Rust</span>
+        </h1>
+        <p class="hero-subtitle">
+            GPUI is a fast, productive UI framework with GPU-accelerated rendering,
+            flexbox layout, and a Tailwind-inspired styling API.
+        </p>
+        <div class="hero-actions">
+            <a href="{{ get_url(path="@/examples/_index.md") }}" class="btn btn-primary">View Examples</a>
+            <a href="{{ config.extra.github_repo }}" class="btn btn-secondary" target="_blank" rel="noopener">GitHub</a>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="features-inner">
+        <div class="feature">
+            <h3>GPU Accelerated</h3>
+            <p>High-performance rendering powered by the GPU for smooth, responsive interfaces.</p>
+        </div>
+        <div class="feature">
+            <h3>Flexbox Layout</h3>
+            <p>Familiar flexbox-based layout system for building complex UIs with ease.</p>
+        </div>
+        <div class="feature">
+            <h3>Tailwind-style API</h3>
+            <p>Chain styling methods like <code>.flex()</code>, <code>.bg()</code>, <code>.rounded_md()</code> directly in Rust.</p>
+        </div>
+        <div class="feature">
+            <h3>Reactive State</h3>
+            <p>Entity-based state management with automatic UI updates when state changes.</p>
+        </div>
+        <div class="feature">
+            <h3>Async First</h3>
+            <p>Built-in async runtime with foreground and background task scheduling.</p>
+        </div>
+        <div class="feature">
+            <h3>Cross Platform</h3>
+            <p>Build native applications for macOS, Linux, and Windows.</p>
+        </div>
+    </div>
+</section>
+
+<section class="quickstart">
+    <div class="quickstart-inner">
+        <h2>Quick Start</h2>
+        <p>Add GPUI to your project:</p>
+        <pre><code class="language-toml">[dependencies]
+gpui = { git = "https://github.com/natebutler/gpui-ce" }</code></pre>
+
+        <p>Create a simple window:</p>
+        <pre><code class="language-rust">use gpui::*;
+
+struct HelloWorld;
+
+impl Render for HelloWorld {
+    fn render(&mut self, _window: &mut Window, _cx: &mut Context&lt;Self&gt;) -> impl IntoElement {
+        div()
+            .flex()
+            .size_full()
+            .justify_center()
+            .items_center()
+            .bg(rgb(0x1e1e1e))
+            .text_color(rgb(0xffffff))
+            .child("Hello, GPUI!")
+    }
+}
+
+fn main() {
+    Application::new().run(|cx: &mut App| {
+        cx.open_window(WindowOptions::default(), |_, cx| {
+            cx.new(|_| HelloWorld)
+        }).unwrap();
+    });
+}</code></pre>
+    </div>
+</section>
+{% endblock %}

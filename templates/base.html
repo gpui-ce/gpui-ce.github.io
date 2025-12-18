@@ -1,40 +1,17 @@
 <!DOCTYPE html>
-<html lang="{{ lang | default(value="en") }}">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ config.title }}{% endblock %}</title>
-    <meta name="description" content="{{ config.description }}">
     <link rel="stylesheet" href="{{ get_url(path="style.css") }}">
-    {% block head %}{% endblock %}
 </head>
 <body>
-    <nav class="nav">
-        <div class="nav-inner">
-            <a href="{{ get_url(path="/") }}" class="nav-logo">
-                <span class="logo-text">GPUI</span>
-                <span class="logo-badge">CE</span>
-            </a>
-            <div class="nav-links">
-                <a href="{{ get_url(path="@/examples/_index.md") }}">Examples</a>
-                <a href="{{ config.extra.github_repo }}" target="_blank" rel="noopener">GitHub</a>
-            </div>
-        </div>
+    <nav>
+        <a href="{{ get_url(path="/") }}">gpui-ce</a>
+        <a href="{{ get_url(path="@/examples/_index.md") }}">examples</a>
+        <a href="{{ config.extra.github_repo }}">github &rarr;</a>
     </nav>
-
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-
-    <footer class="footer">
-        <div class="footer-inner">
-            <p>GPUI Community Edition — A fast, productive UI framework for Rust</p>
-            <p class="footer-links">
-                <a href="{{ config.extra.github_repo }}" target="_blank" rel="noopener">GitHub</a>
-                <span class="separator">·</span>
-                <a href="{{ config.extra.github_repo }}/blob/main/LICENSE-APACHE" target="_blank" rel="noopener">Apache 2.0</a>
-            </p>
-        </div>
-    </footer>
+    {% block content %}{% endblock %}
 </body>
 </html>

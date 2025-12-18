@@ -3,26 +3,17 @@
 {% block title %}{{ section.title }} — {{ config.title }}{% endblock %}
 
 {% block content %}
-<section class="section-header">
-    <div class="section-header-inner">
+<div class="container">
+    <header class="header">
         <h1>{{ section.title }}</h1>
-        {% if section.description %}
-        <p class="section-description">{{ section.description }}</p>
-        {% endif %}
-    </div>
-</section>
+    </header>
 
-<section class="examples-grid">
-    <div class="examples-grid-inner">
+    <ul class="example-list">
         {% for page in section.pages %}
-        <a href="{{ page.permalink }}" class="example-card">
-            <h3 class="example-title">{{ page.title }}</h3>
-            {% if page.description %}
-            <p class="example-description">{{ page.description }}</p>
-            {% endif %}
-            <span class="example-link">View example →</span>
-        </a>
+        <li><a href="{{ page.permalink }}">{{ page.title }}</a></li>
         {% endfor %}
-    </div>
-</section>
+    </ul>
+
+    <p class="run-hint">Run with: <code>cargo run -p gpui --example [name]</code></p>
+</div>
 {% endblock %}

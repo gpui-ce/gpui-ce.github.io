@@ -15,3 +15,4 @@ smart_punctuation = true
 
 [extra]
 github_repo = "https://github.com/gpui-ce/gpui-ce"
+crate_url = "https://crates.io/crates/gpui-ce"

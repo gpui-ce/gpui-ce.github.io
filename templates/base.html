@@ -11,6 +11,7 @@
         <a href="{{ get_url(path="/") }}"{% if current_path == "/" %} class="active"{% endif %}>gpui-ce</a>
         <!--<a href="{{ get_url(path="@/learn/_index.md") }}"{% if current_path is starting_with("/learn") %} class="active"{% endif %}>learn</a>-->
         <a href="{{ get_url(path="@/examples/_index.md") }}"{% if current_path is starting_with("/examples") %} class="active"{% endif %}>examples</a>
+        <a href="{{ config.extra.crate_url }}">crates.io &rarr;</a>
         <a href="{{ config.extra.github_repo }}">github &rarr;</a>
     </nav>
     {% block content %}{% endblock %}

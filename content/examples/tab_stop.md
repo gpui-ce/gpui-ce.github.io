@@ -4,164 +4,166 @@ description = ""
 template = "page.html"
 
 [extra]
-run_command = "cargo run -p gpui --example tab_stop"
-source_file = "crates/gpui/examples/tab_stop.rs"
+run_command = "cargo run --example tab_stop"
+source_file = "examples/tab_stop.rs"
 +++
 
 ## Source Code
 
-<pre><code class="language-rust"><span class="keyword">use</span> gpui<span class="punctuation">::{</span>
-    <span class="constructor">App</span><span class="punctuation">,</span> <span class="constructor">Application</span><span class="punctuation">,</span> <span class="constructor">Bounds</span><span class="punctuation">,</span> <span class="constructor">Context</span><span class="punctuation">,</span> <span class="constructor">Div</span><span class="punctuation">,</span> <span class="constructor">ElementId</span><span class="punctuation">,</span> <span class="constructor">FocusHandle</span><span class="punctuation">,</span> <span class="constructor">KeyBinding</span><span class="punctuation">,</span> <span class="constructor">SharedString</span><span class="punctuation">,</span>
-    <span class="constructor">Stateful</span><span class="punctuation">,</span> <span class="constructor">Window</span><span class="punctuation">,</span> <span class="constructor">WindowBounds</span><span class="punctuation">,</span> <span class="constructor">WindowOptions</span><span class="punctuation">,</span> actions<span class="punctuation">,</span> div<span class="punctuation">,</span> prelude<span class="punctuation">::</span><span class="operator">*</span><span class="punctuation">,</span> px<span class="punctuation">,</span> size<span class="punctuation">,</span>
-<span class="punctuation">};</span>
+```rust
+use gpui::{
+    App, Application, Bounds, Context, Div, ElementId, FocusHandle, KeyBinding, SharedString,
+    Stateful, Window, WindowBounds, WindowOptions, actions, div, prelude::*, px, size,
+};
 
-<span class="macro">actions!</span><span class="punctuation">(</span>example<span class="punctuation">,</span> <span class="punctuation">[</span><span class="constructor">Tab</span><span class="punctuation">,</span> <span class="constructor">TabPrev</span><span class="punctuation">]);</span>
+actions!(example, [Tab, TabPrev]);
 
-<span class="keyword">struct</span> <span class="type">Example</span> <span class="punctuation">{</span>
-    <span class="property">focus_handle</span><span class="punctuation">:</span> <span class="type">FocusHandle</span><span class="punctuation">,</span>
-    <span class="property">items</span><span class="punctuation">:</span> <span class="type">Vec</span><span class="punctuation">&lt;</span><span class="type">FocusHandle</span><span class="punctuation">&gt;,</span>
-    <span class="property">message</span><span class="punctuation">:</span> <span class="type">SharedString</span><span class="punctuation">,</span>
-<span class="punctuation">}</span>
+struct Example {
+    focus_handle: FocusHandle,
+    items: Vec<FocusHandle>,
+    message: SharedString,
+}
 
-<span class="keyword">impl</span> <span class="type">Example</span> <span class="punctuation">{</span>
-    <span class="keyword">fn</span> <span class="function">new</span><span class="punctuation">(</span><span class="variable">window</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Window</span><span class="punctuation">,</span> <span class="variable">cx</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Context</span><span class="punctuation">&lt;</span><span class="type">Self</span><span class="punctuation">&gt;)</span> -&gt; <span class="type">Self</span> <span class="punctuation">{</span>
-        <span class="keyword">let</span> items = <span class="macro">vec!</span><span class="punctuation">[</span>
-            cx<span class="punctuation">.</span><span class="property">focus_handle</span><span class="punctuation">().</span><span class="property">tab_index</span><span class="punctuation">(</span><span class="constant">1</span><span class="punctuation">).</span><span class="property">tab_stop</span><span class="punctuation">(</span><span class="constant">true</span><span class="punctuation">),</span>
-            cx<span class="punctuation">.</span><span class="property">focus_handle</span><span class="punctuation">().</span><span class="property">tab_index</span><span class="punctuation">(</span><span class="constant">2</span><span class="punctuation">).</span><span class="property">tab_stop</span><span class="punctuation">(</span><span class="constant">true</span><span class="punctuation">),</span>
-            cx<span class="punctuation">.</span><span class="property">focus_handle</span><span class="punctuation">().</span><span class="property">tab_index</span><span class="punctuation">(</span><span class="constant">3</span><span class="punctuation">).</span><span class="property">tab_stop</span><span class="punctuation">(</span><span class="constant">true</span><span class="punctuation">),</span>
-            cx<span class="punctuation">.</span><span class="property">focus_handle</span><span class="punctuation">(),</span>
-            cx<span class="punctuation">.</span><span class="property">focus_handle</span><span class="punctuation">().</span><span class="property">tab_index</span><span class="punctuation">(</span><span class="constant">2</span><span class="punctuation">).</span><span class="property">tab_stop</span><span class="punctuation">(</span><span class="constant">true</span><span class="punctuation">),</span>
-        <span class="punctuation">];</span>
+impl Example {
+    fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
+        let items = vec![
+            cx.focus_handle().tab_index(1).tab_stop(true),
+            cx.focus_handle().tab_index(2).tab_stop(true),
+            cx.focus_handle().tab_index(3).tab_stop(true),
+            cx.focus_handle(),
+            cx.focus_handle().tab_index(2).tab_stop(true),
+        ];
 
-        <span class="keyword">let</span> focus_handle = cx<span class="punctuation">.</span><span class="property">focus_handle</span><span class="punctuation">();</span>
-        window<span class="punctuation">.</span><span class="property">focus</span><span class="punctuation">(</span><span class="operator">&amp;</span>focus_handle<span class="punctuation">);</span>
+        let focus_handle = cx.focus_handle();
+        window.focus(&focus_handle);
 
-        <span class="type">Self</span> <span class="punctuation">{</span>
-            focus_handle<span class="punctuation">,</span>
-            items<span class="punctuation">,</span>
-            <span class="property">message</span><span class="punctuation">:</span> <span class="constructor">SharedString</span><span class="punctuation">::</span><span class="function">from</span><span class="punctuation">(</span><span class="string">&quot;Press `Tab`, `Shift-Tab` to switch focus.&quot;</span><span class="punctuation">),</span>
-        <span class="punctuation">}</span>
-    <span class="punctuation">}</span>
+        Self {
+            focus_handle,
+            items,
+            message: SharedString::from("Press `Tab`, `Shift-Tab` to switch focus."),
+        }
+    }
 
-    <span class="keyword">fn</span> <span class="function">on_tab</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="keyword">mut</span> <span class="variable">self</span><span class="punctuation">,</span> _<span class="punctuation">:</span> <span class="operator">&amp;</span><span class="type">Tab</span><span class="punctuation">,</span> <span class="variable">window</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Window</span><span class="punctuation">,</span> _<span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Context</span><span class="punctuation">&lt;</span><span class="type">Self</span><span class="punctuation">&gt;)</span> <span class="punctuation">{</span>
-        window<span class="punctuation">.</span><span class="property">focus_next</span><span class="punctuation">();</span>
-        <span class="variable">self</span><span class="punctuation">.</span><span class="property">message</span> = <span class="constructor">SharedString</span><span class="punctuation">::</span><span class="function">from</span><span class="punctuation">(</span><span class="string">&quot;You have pressed `Tab`.&quot;</span><span class="punctuation">);</span>
-    <span class="punctuation">}</span>
+    fn on_tab(&mut self, _: &Tab, window: &mut Window, _: &mut Context<Self>) {
+        window.focus_next();
+        self.message = SharedString::from("You have pressed `Tab`.");
+    }
 
-    <span class="keyword">fn</span> <span class="function">on_tab_prev</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="keyword">mut</span> <span class="variable">self</span><span class="punctuation">,</span> _<span class="punctuation">:</span> <span class="operator">&amp;</span><span class="type">TabPrev</span><span class="punctuation">,</span> <span class="variable">window</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Window</span><span class="punctuation">,</span> _<span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Context</span><span class="punctuation">&lt;</span><span class="type">Self</span><span class="punctuation">&gt;)</span> <span class="punctuation">{</span>
-        window<span class="punctuation">.</span><span class="property">focus_prev</span><span class="punctuation">();</span>
-        <span class="variable">self</span><span class="punctuation">.</span><span class="property">message</span> = <span class="constructor">SharedString</span><span class="punctuation">::</span><span class="function">from</span><span class="punctuation">(</span><span class="string">&quot;You have pressed `Shift-Tab`.&quot;</span><span class="punctuation">);</span>
-    <span class="punctuation">}</span>
-<span class="punctuation">}</span>
+    fn on_tab_prev(&mut self, _: &TabPrev, window: &mut Window, _: &mut Context<Self>) {
+        window.focus_prev();
+        self.message = SharedString::from("You have pressed `Shift-Tab`.");
+    }
+}
 
-<span class="keyword">impl</span> <span class="type">Render</span> <span class="keyword">for</span> <span class="type">Example</span> <span class="punctuation">{</span>
-    <span class="keyword">fn</span> <span class="function">render</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="keyword">mut</span> <span class="variable">self</span><span class="punctuation">,</span> <span class="variable">window</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Window</span><span class="punctuation">,</span> <span class="variable">cx</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Context</span><span class="punctuation">&lt;</span><span class="type">Self</span><span class="punctuation">&gt;)</span> -&gt; <span class="keyword">impl</span> <span class="type">IntoElement</span> <span class="punctuation">{</span>
-        <span class="keyword">fn</span> <span class="function">tab_stop_style</span><span class="punctuation">&lt;</span><span class="type">T</span><span class="punctuation">:</span> <span class="type">Styled</span><span class="punctuation">&gt;(</span><span class="variable">this</span><span class="punctuation">:</span> <span class="type">T</span><span class="punctuation">)</span> -&gt; <span class="type">T</span> <span class="punctuation">{</span>
-            this<span class="punctuation">.</span><span class="property">border_3</span><span class="punctuation">().</span><span class="property">border_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">blue</span><span class="punctuation">())</span>
-        <span class="punctuation">}</span>
+impl Render for Example {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        fn tab_stop_style<T: Styled>(this: T) -> T {
+            this.border_3().border_color(gpui::blue())
+        }
 
-        <span class="keyword">fn</span> <span class="function">button</span><span class="punctuation">(</span><span class="variable">id</span><span class="punctuation">:</span> <span class="keyword">impl</span> <span class="type">Into</span><span class="punctuation">&lt;</span><span class="type">ElementId</span><span class="punctuation">&gt;)</span> -&gt; <span class="type">Stateful</span><span class="punctuation">&lt;</span><span class="type">Div</span><span class="punctuation">&gt;</span> <span class="punctuation">{</span>
-            <span class="function">div</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(</span>id<span class="punctuation">)</span>
-                <span class="punctuation">.</span><span class="property">h_10</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">flex_1</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">justify_center</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">items_center</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">border_1</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">black</span><span class="punctuation">())</span>
-                <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">black</span><span class="punctuation">())</span>
-                <span class="punctuation">.</span><span class="property">text_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">white</span><span class="punctuation">())</span>
-                <span class="punctuation">.</span><span class="property">focus</span><span class="punctuation">(</span>tab_stop_style<span class="punctuation">)</span>
-                <span class="punctuation">.</span><span class="property">shadow_sm</span><span class="punctuation">()</span>
-        <span class="punctuation">}</span>
+        fn button(id: impl Into<ElementId>) -> Stateful<Div> {
+            div()
+                .id(id)
+                .h_10()
+                .flex_1()
+                .flex()
+                .justify_center()
+                .items_center()
+                .border_1()
+                .border_color(gpui::black())
+                .bg(gpui::black())
+                .text_color(gpui::white())
+                .focus(tab_stop_style)
+                .shadow_sm()
+        }
 
-        <span class="function">div</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(</span><span class="string">&quot;app&quot;</span><span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">track_focus</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="variable">self</span><span class="punctuation">.</span><span class="property">focus_handle</span><span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">on_action</span><span class="punctuation">(</span>cx<span class="punctuation">.</span><span class="property">listener</span><span class="punctuation">(</span><span class="constructor">Self</span><span class="punctuation">::</span>on_tab<span class="punctuation">))</span>
-            <span class="punctuation">.</span><span class="property">on_action</span><span class="punctuation">(</span>cx<span class="punctuation">.</span><span class="property">listener</span><span class="punctuation">(</span><span class="constructor">Self</span><span class="punctuation">::</span>on_tab_prev<span class="punctuation">))</span>
-            <span class="punctuation">.</span><span class="property">size_full</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">flex_col</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">p_4</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">gap_3</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">white</span><span class="punctuation">())</span>
-            <span class="punctuation">.</span><span class="property">text_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">black</span><span class="punctuation">())</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="property">message</span><span class="punctuation">.</span><span class="property">clone</span><span class="punctuation">())</span>
-            <span class="punctuation">.</span><span class="property">children</span><span class="punctuation">(</span>
-                <span class="variable">self</span><span class="punctuation">.</span><span class="property">items</span>
-                    <span class="punctuation">.</span><span class="property">clone</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">into_iter</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">enumerate</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">map</span><span class="punctuation">(</span>|<span class="punctuation">(</span>ix<span class="punctuation">,</span> item_handle<span class="punctuation">)</span>| <span class="punctuation">{</span>
-                        <span class="function">div</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">id</span><span class="punctuation">((</span><span class="string">&quot;item&quot;</span><span class="punctuation">,</span> ix<span class="punctuation">))</span>
-                            <span class="punctuation">.</span><span class="property">track_focus</span><span class="punctuation">(</span><span class="operator">&amp;</span>item_handle<span class="punctuation">)</span>
-                            <span class="punctuation">.</span><span class="property">h_10</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">w_full</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">justify_center</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">items_center</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">border_1</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">black</span><span class="punctuation">())</span>
-                            <span class="punctuation">.</span><span class="property">when</span><span class="punctuation">(</span>
-                                item_handle<span class="punctuation">.</span><span class="property">tab_stop</span> &amp;&amp; item_handle<span class="punctuation">.</span><span class="property">is_focused</span><span class="punctuation">(</span>window<span class="punctuation">),</span>
-                                tab_stop_style<span class="punctuation">,</span>
-                            <span class="punctuation">)</span>
-                            <span class="punctuation">.</span><span class="property">map</span><span class="punctuation">(</span>|this| <span class="keyword">match</span> item_handle<span class="punctuation">.</span><span class="property">tab_stop</span> <span class="punctuation">{</span>
-                                <span class="constant">true</span> =&gt; this
-                                    <span class="punctuation">.</span><span class="property">hover</span><span class="punctuation">(</span>|this| this<span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">black</span><span class="punctuation">().</span><span class="property">opacity</span><span class="punctuation">(</span><span class="constant">0.1</span><span class="punctuation">)))</span>
-                                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="macro">format!</span><span class="punctuation">(</span><span class="string">&quot;tab_index: {}&quot;</span><span class="punctuation">,</span> item_handle<span class="punctuation">.</span><span class="property">tab_index</span><span class="punctuation">)),</span>
-                                <span class="constant">false</span> =&gt; this<span class="punctuation">.</span><span class="property">opacity</span><span class="punctuation">(</span><span class="constant">0.4</span><span class="punctuation">).</span><span class="property">child</span><span class="punctuation">(</span><span class="string">&quot;tab_stop: false&quot;</span><span class="punctuation">),</span>
-                            <span class="punctuation">})</span>
-                    <span class="punctuation">}),</span>
-            <span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                <span class="function">div</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex_row</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">gap_3</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">items_center</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">button</span><span class="punctuation">(</span><span class="string">&quot;el1&quot;</span><span class="punctuation">)</span>
-                            <span class="punctuation">.</span><span class="property">tab_index</span><span class="punctuation">(</span><span class="constant">4</span><span class="punctuation">)</span>
-                            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="string">&quot;Button 1&quot;</span><span class="punctuation">)</span>
-                            <span class="punctuation">.</span><span class="property">on_click</span><span class="punctuation">(</span>cx<span class="punctuation">.</span><span class="property">listener</span><span class="punctuation">(</span>|this<span class="punctuation">,</span> _<span class="punctuation">,</span> _<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                                this<span class="punctuation">.</span><span class="property">message</span> = <span class="string">&quot;You have clicked Button 1.&quot;</span><span class="punctuation">.</span><span class="property">into</span><span class="punctuation">();</span>
-                                cx<span class="punctuation">.</span><span class="property">notify</span><span class="punctuation">();</span>
-                            <span class="punctuation">})),</span>
-                    <span class="punctuation">)</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">button</span><span class="punctuation">(</span><span class="string">&quot;el2&quot;</span><span class="punctuation">)</span>
-                            <span class="punctuation">.</span><span class="property">tab_index</span><span class="punctuation">(</span><span class="constant">5</span><span class="punctuation">)</span>
-                            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="string">&quot;Button 2&quot;</span><span class="punctuation">)</span>
-                            <span class="punctuation">.</span><span class="property">on_click</span><span class="punctuation">(</span>cx<span class="punctuation">.</span><span class="property">listener</span><span class="punctuation">(</span>|this<span class="punctuation">,</span> _<span class="punctuation">,</span> _<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                                this<span class="punctuation">.</span><span class="property">message</span> = <span class="string">&quot;You have clicked Button 2.&quot;</span><span class="punctuation">.</span><span class="property">into</span><span class="punctuation">();</span>
-                                cx<span class="punctuation">.</span><span class="property">notify</span><span class="punctuation">();</span>
-                            <span class="punctuation">})),</span>
-                    <span class="punctuation">),</span>
-            <span class="punctuation">)</span>
-    <span class="punctuation">}</span>
-<span class="punctuation">}</span>
+        div()
+            .id("app")
+            .track_focus(&self.focus_handle)
+            .on_action(cx.listener(Self::on_tab))
+            .on_action(cx.listener(Self::on_tab_prev))
+            .size_full()
+            .flex()
+            .flex_col()
+            .p_4()
+            .gap_3()
+            .bg(gpui::white())
+            .text_color(gpui::black())
+            .child(self.message.clone())
+            .children(
+                self.items
+                    .clone()
+                    .into_iter()
+                    .enumerate()
+                    .map(|(ix, item_handle)| {
+                        div()
+                            .id(("item", ix))
+                            .track_focus(&item_handle)
+                            .h_10()
+                            .w_full()
+                            .flex()
+                            .justify_center()
+                            .items_center()
+                            .border_1()
+                            .border_color(gpui::black())
+                            .when(
+                                item_handle.tab_stop && item_handle.is_focused(window),
+                                tab_stop_style,
+                            )
+                            .map(|this| match item_handle.tab_stop {
+                                true => this
+                                    .hover(|this| this.bg(gpui::black().opacity(0.1)))
+                                    .child(format!("tab_index: {}", item_handle.tab_index)),
+                                false => this.opacity(0.4).child("tab_stop: false"),
+                            })
+                    }),
+            )
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .gap_3()
+                    .items_center()
+                    .child(
+                        button("el1")
+                            .tab_index(4)
+                            .child("Button 1")
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                this.message = "You have clicked Button 1.".into();
+                                cx.notify();
+                            })),
+                    )
+                    .child(
+                        button("el2")
+                            .tab_index(5)
+                            .child("Button 2")
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                this.message = "You have clicked Button 2.".into();
+                                cx.notify();
+                            })),
+                    ),
+            )
+    }
+}
 
-<span class="keyword">fn</span> <span class="function">main</span><span class="punctuation">()</span> <span class="punctuation">{</span>
-    <span class="constructor">Application</span><span class="punctuation">::</span><span class="function">new</span><span class="punctuation">().</span><span class="property">run</span><span class="punctuation">(</span>|<span class="variable">cx</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">App</span>| <span class="punctuation">{</span>
-        cx<span class="punctuation">.</span><span class="property">bind_keys</span><span class="punctuation">([</span>
-            <span class="constructor">KeyBinding</span><span class="punctuation">::</span><span class="function">new</span><span class="punctuation">(</span><span class="string">&quot;tab&quot;</span><span class="punctuation">,</span> <span class="constructor">Tab</span><span class="punctuation">,</span> <span class="constructor">None</span><span class="punctuation">),</span>
-            <span class="constructor">KeyBinding</span><span class="punctuation">::</span><span class="function">new</span><span class="punctuation">(</span><span class="string">&quot;shift-tab&quot;</span><span class="punctuation">,</span> <span class="constructor">TabPrev</span><span class="punctuation">,</span> <span class="constructor">None</span><span class="punctuation">),</span>
-        <span class="punctuation">]);</span>
+fn main() {
+    Application::new().run(|cx: &mut App| {
+        cx.bind_keys([
+            KeyBinding::new("tab", Tab, None),
+            KeyBinding::new("shift-tab", TabPrev, None),
+        ]);
 
-        <span class="keyword">let</span> bounds = <span class="constructor">Bounds</span><span class="punctuation">::</span><span class="function">centered</span><span class="punctuation">(</span><span class="constructor">None</span><span class="punctuation">,</span> <span class="function">size</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">800.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">600.0</span><span class="punctuation">)),</span> cx<span class="punctuation">);</span>
-        cx<span class="punctuation">.</span><span class="property">open_window</span><span class="punctuation">(</span>
-            <span class="type">WindowOptions</span> <span class="punctuation">{</span>
-                <span class="property">window_bounds</span><span class="punctuation">:</span> <span class="constructor">Some</span><span class="punctuation">(</span><span class="constructor">WindowBounds</span><span class="punctuation">::</span><span class="constructor">Windowed</span><span class="punctuation">(</span>bounds<span class="punctuation">)),</span>
-                ..<span class="constructor">Default</span><span class="punctuation">::</span><span class="function">default</span><span class="punctuation">()</span>
-            <span class="punctuation">},</span>
-            |window<span class="punctuation">,</span> cx| cx<span class="punctuation">.</span><span class="property">new</span><span class="punctuation">(</span>|cx| <span class="constructor">Example</span><span class="punctuation">::</span><span class="function">new</span><span class="punctuation">(</span>window<span class="punctuation">,</span> cx<span class="punctuation">)),</span>
-        <span class="punctuation">)</span>
-        <span class="punctuation">.</span><span class="property">unwrap</span><span class="punctuation">();</span>
+        let bounds = Bounds::centered(None, size(px(800.), px(600.0)), cx);
+        cx.open_window(
+            WindowOptions {
+                window_bounds: Some(WindowBounds::Windowed(bounds)),
+                ..Default::default()
+            },
+            |window, cx| cx.new(|cx| Example::new(window, cx)),
+        )
+        .unwrap();
 
-        cx<span class="punctuation">.</span><span class="property">activate</span><span class="punctuation">(</span><span class="constant">true</span><span class="punctuation">);</span>
-    <span class="punctuation">});</span>
-<span class="punctuation">}</span></code></pre>
+        cx.activate(true);
+    });
+}
+```

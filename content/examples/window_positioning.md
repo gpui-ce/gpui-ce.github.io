@@ -4,228 +4,230 @@ description = ""
 template = "page.html"
 
 [extra]
-run_command = "cargo run -p gpui --example window_positioning"
-source_file = "crates/gpui/examples/window_positioning.rs"
+run_command = "cargo run --example window_positioning"
+source_file = "examples/window_positioning.rs"
 +++
 
 ## Source Code
 
-<pre><code class="language-rust"><span class="keyword">use</span> gpui<span class="punctuation">::{</span>
-    <span class="constructor">App</span><span class="punctuation">,</span> <span class="constructor">Application</span><span class="punctuation">,</span> <span class="constructor">Bounds</span><span class="punctuation">,</span> <span class="constructor">Context</span><span class="punctuation">,</span> <span class="constructor">DisplayId</span><span class="punctuation">,</span> <span class="constructor">Hsla</span><span class="punctuation">,</span> <span class="constructor">Pixels</span><span class="punctuation">,</span> <span class="constructor">SharedString</span><span class="punctuation">,</span> <span class="constructor">Size</span><span class="punctuation">,</span> <span class="constructor">Window</span><span class="punctuation">,</span>
-    <span class="constructor">WindowBackgroundAppearance</span><span class="punctuation">,</span> <span class="constructor">WindowBounds</span><span class="punctuation">,</span> <span class="constructor">WindowKind</span><span class="punctuation">,</span> <span class="constructor">WindowOptions</span><span class="punctuation">,</span> div<span class="punctuation">,</span> point<span class="punctuation">,</span> prelude<span class="punctuation">::</span><span class="operator">*</span><span class="punctuation">,</span>
-    px<span class="punctuation">,</span> rgb<span class="punctuation">,</span>
-<span class="punctuation">};</span>
+```rust
+use gpui::{
+    App, Application, Bounds, Context, DisplayId, Hsla, Pixels, SharedString, Size, Window,
+    WindowBackgroundAppearance, WindowBounds, WindowKind, WindowOptions, div, point, prelude::*,
+    px, rgb,
+};
 
-<span class="keyword">struct</span> <span class="type">WindowContent</span> <span class="punctuation">{</span>
-    <span class="property">text</span><span class="punctuation">:</span> <span class="type">SharedString</span><span class="punctuation">,</span>
-    <span class="property">bounds</span><span class="punctuation">:</span> <span class="type">Bounds</span><span class="punctuation">&lt;</span><span class="type">Pixels</span><span class="punctuation">&gt;,</span>
-    <span class="property">bg</span><span class="punctuation">:</span> <span class="type">Hsla</span><span class="punctuation">,</span>
-<span class="punctuation">}</span>
+struct WindowContent {
+    text: SharedString,
+    bounds: Bounds<Pixels>,
+    bg: Hsla,
+}
 
-<span class="keyword">impl</span> <span class="type">Render</span> <span class="keyword">for</span> <span class="type">WindowContent</span> <span class="punctuation">{</span>
-    <span class="keyword">fn</span> <span class="function">render</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="keyword">mut</span> <span class="variable">self</span><span class="punctuation">,</span> <span class="variable">window</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Window</span><span class="punctuation">,</span> _<span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Context</span><span class="punctuation">&lt;</span><span class="type">Self</span><span class="punctuation">&gt;)</span> -&gt; <span class="keyword">impl</span> <span class="type">IntoElement</span> <span class="punctuation">{</span>
-        <span class="keyword">let</span> window_bounds = window<span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">();</span>
+impl Render for WindowContent {
+    fn render(&mut self, window: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        let window_bounds = window.bounds();
 
-        <span class="function">div</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">flex_col</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">size_full</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">items_center</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">text_color</span><span class="punctuation">(</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0xffffff</span><span class="punctuation">))</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="property">text</span><span class="punctuation">.</span><span class="property">clone</span><span class="punctuation">())</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                <span class="function">div</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex_col</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">text_sm</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">items_center</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">size_full</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="macro">format!</span><span class="punctuation">(</span>
-                        <span class="string">&quot;origin: {}, {} size: {}, {}&quot;</span><span class="punctuation">,</span>
-                        <span class="variable">self</span><span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">.</span><span class="property">origin</span><span class="punctuation">.</span><span class="property">x</span><span class="punctuation">,</span>
-                        <span class="variable">self</span><span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">.</span><span class="property">origin</span><span class="punctuation">.</span><span class="property">y</span><span class="punctuation">,</span>
-                        <span class="variable">self</span><span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">.</span><span class="property">size</span><span class="punctuation">.</span><span class="property">width</span><span class="punctuation">,</span>
-                        <span class="variable">self</span><span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">.</span><span class="property">size</span><span class="punctuation">.</span><span class="property">height</span>
-                    <span class="punctuation">))</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="macro">format!</span><span class="punctuation">(</span>
-                        <span class="string">&quot;cx.bounds() origin: {}, {} size {}, {}&quot;</span><span class="punctuation">,</span>
-                        window_bounds<span class="punctuation">.</span><span class="property">origin</span><span class="punctuation">.</span><span class="property">x</span><span class="punctuation">,</span>
-                        window_bounds<span class="punctuation">.</span><span class="property">origin</span><span class="punctuation">.</span><span class="property">y</span><span class="punctuation">,</span>
-                        window_bounds<span class="punctuation">.</span><span class="property">size</span><span class="punctuation">.</span><span class="property">width</span><span class="punctuation">,</span>
-                        window_bounds<span class="punctuation">.</span><span class="property">size</span><span class="punctuation">.</span><span class="property">height</span>
-                    <span class="punctuation">)),</span>
-            <span class="punctuation">)</span>
-    <span class="punctuation">}</span>
-<span class="punctuation">}</span>
+        div()
+            .flex()
+            .flex_col()
+            .bg(self.bg)
+            .size_full()
+            .items_center()
+            .text_color(rgb(0xffffff))
+            .child(self.text.clone())
+            .child(
+                div()
+                    .flex()
+                    .flex_col()
+                    .text_sm()
+                    .items_center()
+                    .size_full()
+                    .child(format!(
+                        "origin: {}, {} size: {}, {}",
+                        self.bounds.origin.x,
+                        self.bounds.origin.y,
+                        self.bounds.size.width,
+                        self.bounds.size.height
+                    ))
+                    .child(format!(
+                        "cx.bounds() origin: {}, {} size {}, {}",
+                        window_bounds.origin.x,
+                        window_bounds.origin.y,
+                        window_bounds.size.width,
+                        window_bounds.size.height
+                    )),
+            )
+    }
+}
 
-<span class="keyword">fn</span> <span class="function">build_window_options</span><span class="punctuation">(</span><span class="variable">display_id</span><span class="punctuation">:</span> <span class="type">DisplayId</span><span class="punctuation">,</span> <span class="variable">bounds</span><span class="punctuation">:</span> <span class="type">Bounds</span><span class="punctuation">&lt;</span><span class="type">Pixels</span><span class="punctuation">&gt;)</span> -&gt; <span class="type">WindowOptions</span> <span class="punctuation">{</span>
-    <span class="type">WindowOptions</span> <span class="punctuation">{</span>
-        <span class="comment">// Set the bounds of the window in screen coordinates</span>
-        <span class="property">window_bounds</span><span class="punctuation">:</span> <span class="constructor">Some</span><span class="punctuation">(</span><span class="constructor">WindowBounds</span><span class="punctuation">::</span><span class="constructor">Windowed</span><span class="punctuation">(</span>bounds<span class="punctuation">)),</span>
-        <span class="comment">// Specify the display_id to ensure the window is created on the correct screen</span>
-        <span class="property">display_id</span><span class="punctuation">:</span> <span class="constructor">Some</span><span class="punctuation">(</span>display_id<span class="punctuation">),</span>
-        <span class="property">titlebar</span><span class="punctuation">:</span> <span class="constructor">None</span><span class="punctuation">,</span>
-        <span class="property">window_background</span><span class="punctuation">:</span> <span class="constructor">WindowBackgroundAppearance</span><span class="punctuation">::</span><span class="constructor">Transparent</span><span class="punctuation">,</span>
-        <span class="property">focus</span><span class="punctuation">:</span> <span class="constant">false</span><span class="punctuation">,</span>
-        <span class="property">show</span><span class="punctuation">:</span> <span class="constant">true</span><span class="punctuation">,</span>
-        <span class="property">kind</span><span class="punctuation">:</span> <span class="constructor">WindowKind</span><span class="punctuation">::</span><span class="constructor">PopUp</span><span class="punctuation">,</span>
-        <span class="property">is_movable</span><span class="punctuation">:</span> <span class="constant">false</span><span class="punctuation">,</span>
-        <span class="property">app_id</span><span class="punctuation">:</span> <span class="constructor">None</span><span class="punctuation">,</span>
-        <span class="property">window_min_size</span><span class="punctuation">:</span> <span class="constructor">None</span><span class="punctuation">,</span>
-        <span class="property">window_decorations</span><span class="punctuation">:</span> <span class="constructor">None</span><span class="punctuation">,</span>
-        <span class="property">tabbing_identifier</span><span class="punctuation">:</span> <span class="constructor">None</span><span class="punctuation">,</span>
-        ..<span class="constructor">Default</span><span class="punctuation">::</span><span class="function">default</span><span class="punctuation">()</span>
-    <span class="punctuation">}</span>
-<span class="punctuation">}</span>
+fn build_window_options(display_id: DisplayId, bounds: Bounds<Pixels>) -> WindowOptions {
+    WindowOptions {
+        // Set the bounds of the window in screen coordinates
+        window_bounds: Some(WindowBounds::Windowed(bounds)),
+        // Specify the display_id to ensure the window is created on the correct screen
+        display_id: Some(display_id),
+        titlebar: None,
+        window_background: WindowBackgroundAppearance::Transparent,
+        focus: false,
+        show: true,
+        kind: WindowKind::PopUp,
+        is_movable: false,
+        app_id: None,
+        window_min_size: None,
+        window_decorations: None,
+        tabbing_identifier: None,
+        ..Default::default()
+    }
+}
 
-<span class="keyword">fn</span> <span class="function">main</span><span class="punctuation">()</span> <span class="punctuation">{</span>
-    <span class="constructor">Application</span><span class="punctuation">::</span><span class="function">new</span><span class="punctuation">().</span><span class="property">run</span><span class="punctuation">(</span>|<span class="variable">cx</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">App</span>| <span class="punctuation">{</span>
-        <span class="comment">// Create several new windows, positioned in the top right corner of each screen</span>
-        <span class="keyword">let</span> size = <span class="type">Size</span> <span class="punctuation">{</span>
-            <span class="property">width</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">350.</span><span class="punctuation">),</span>
-            <span class="property">height</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">75.</span><span class="punctuation">),</span>
-        <span class="punctuation">};</span>
-        <span class="keyword">let</span> margin_offset = <span class="function">px</span><span class="punctuation">(</span><span class="constant">150.</span><span class="punctuation">);</span>
+fn main() {
+    Application::new().run(|cx: &mut App| {
+        // Create several new windows, positioned in the top right corner of each screen
+        let size = Size {
+            width: px(350.),
+            height: px(75.),
+        };
+        let margin_offset = px(150.);
 
-        <span class="keyword">for</span> screen <span class="keyword">in</span> cx<span class="punctuation">.</span><span class="property">displays</span><span class="punctuation">()</span> <span class="punctuation">{</span>
-            <span class="keyword">let</span> bounds = <span class="type">Bounds</span> <span class="punctuation">{</span>
-                <span class="property">origin</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span>margin_offset<span class="punctuation">,</span> margin_offset<span class="punctuation">),</span>
-                size<span class="punctuation">,</span>
-            <span class="punctuation">};</span>
+        for screen in cx.displays() {
+            let bounds = Bounds {
+                origin: point(margin_offset, margin_offset),
+                size,
+            };
 
-            cx<span class="punctuation">.</span><span class="property">open_window</span><span class="punctuation">(</span><span class="function">build_window_options</span><span class="punctuation">(</span>screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(),</span> bounds<span class="punctuation">),</span> |_<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                cx<span class="punctuation">.</span><span class="property">new</span><span class="punctuation">(</span>|_| <span class="type">WindowContent</span> <span class="punctuation">{</span>
-                    <span class="property">text</span><span class="punctuation">:</span> <span class="macro">format!</span><span class="punctuation">(</span><span class="string">&quot;Top Left {:?}&quot;</span><span class="punctuation">,</span> screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">()).</span><span class="property">into</span><span class="punctuation">(),</span>
-                    <span class="property">bg</span><span class="punctuation">:</span> gpui<span class="punctuation">::</span><span class="function">red</span><span class="punctuation">(),</span>
-                    bounds<span class="punctuation">,</span>
-                <span class="punctuation">})</span>
-            <span class="punctuation">})</span>
-            <span class="punctuation">.</span><span class="property">unwrap</span><span class="punctuation">();</span>
+            cx.open_window(build_window_options(screen.id(), bounds), |_, cx| {
+                cx.new(|_| WindowContent {
+                    text: format!("Top Left {:?}", screen.id()).into(),
+                    bg: gpui::red(),
+                    bounds,
+                })
+            })
+            .unwrap();
 
-            <span class="keyword">let</span> bounds = <span class="type">Bounds</span> <span class="punctuation">{</span>
-                <span class="property">origin</span><span class="punctuation">:</span> screen<span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">().</span><span class="property">top_right</span><span class="punctuation">()</span>
-                    - <span class="function">point</span><span class="punctuation">(</span>size<span class="punctuation">.</span><span class="property">width</span> + margin_offset<span class="punctuation">,</span> -margin_offset<span class="punctuation">),</span>
-                size<span class="punctuation">,</span>
-            <span class="punctuation">};</span>
+            let bounds = Bounds {
+                origin: screen.bounds().top_right()
+                    - point(size.width + margin_offset, -margin_offset),
+                size,
+            };
 
-            cx<span class="punctuation">.</span><span class="property">open_window</span><span class="punctuation">(</span><span class="function">build_window_options</span><span class="punctuation">(</span>screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(),</span> bounds<span class="punctuation">),</span> |_<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                cx<span class="punctuation">.</span><span class="property">new</span><span class="punctuation">(</span>|_| <span class="type">WindowContent</span> <span class="punctuation">{</span>
-                    <span class="property">text</span><span class="punctuation">:</span> <span class="macro">format!</span><span class="punctuation">(</span><span class="string">&quot;Top Right {:?}&quot;</span><span class="punctuation">,</span> screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">()).</span><span class="property">into</span><span class="punctuation">(),</span>
-                    <span class="property">bg</span><span class="punctuation">:</span> gpui<span class="punctuation">::</span><span class="function">red</span><span class="punctuation">(),</span>
-                    bounds<span class="punctuation">,</span>
-                <span class="punctuation">})</span>
-            <span class="punctuation">})</span>
-            <span class="punctuation">.</span><span class="property">unwrap</span><span class="punctuation">();</span>
+            cx.open_window(build_window_options(screen.id(), bounds), |_, cx| {
+                cx.new(|_| WindowContent {
+                    text: format!("Top Right {:?}", screen.id()).into(),
+                    bg: gpui::red(),
+                    bounds,
+                })
+            })
+            .unwrap();
 
-            <span class="keyword">let</span> bounds = <span class="type">Bounds</span> <span class="punctuation">{</span>
-                <span class="property">origin</span><span class="punctuation">:</span> screen<span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">().</span><span class="property">bottom_left</span><span class="punctuation">()</span>
-                    - <span class="function">point</span><span class="punctuation">(</span>-margin_offset<span class="punctuation">,</span> size<span class="punctuation">.</span><span class="property">height</span> + margin_offset<span class="punctuation">),</span>
-                size<span class="punctuation">,</span>
-            <span class="punctuation">};</span>
+            let bounds = Bounds {
+                origin: screen.bounds().bottom_left()
+                    - point(-margin_offset, size.height + margin_offset),
+                size,
+            };
 
-            cx<span class="punctuation">.</span><span class="property">open_window</span><span class="punctuation">(</span><span class="function">build_window_options</span><span class="punctuation">(</span>screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(),</span> bounds<span class="punctuation">),</span> |_<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                cx<span class="punctuation">.</span><span class="property">new</span><span class="punctuation">(</span>|_| <span class="type">WindowContent</span> <span class="punctuation">{</span>
-                    <span class="property">text</span><span class="punctuation">:</span> <span class="macro">format!</span><span class="punctuation">(</span><span class="string">&quot;Bottom Left {:?}&quot;</span><span class="punctuation">,</span> screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">()).</span><span class="property">into</span><span class="punctuation">(),</span>
-                    <span class="property">bg</span><span class="punctuation">:</span> gpui<span class="punctuation">::</span><span class="function">blue</span><span class="punctuation">(),</span>
-                    bounds<span class="punctuation">,</span>
-                <span class="punctuation">})</span>
-            <span class="punctuation">})</span>
-            <span class="punctuation">.</span><span class="property">unwrap</span><span class="punctuation">();</span>
+            cx.open_window(build_window_options(screen.id(), bounds), |_, cx| {
+                cx.new(|_| WindowContent {
+                    text: format!("Bottom Left {:?}", screen.id()).into(),
+                    bg: gpui::blue(),
+                    bounds,
+                })
+            })
+            .unwrap();
 
-            <span class="keyword">let</span> bounds = <span class="type">Bounds</span> <span class="punctuation">{</span>
-                <span class="property">origin</span><span class="punctuation">:</span> screen<span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">().</span><span class="property">bottom_right</span><span class="punctuation">()</span>
-                    - <span class="function">point</span><span class="punctuation">(</span>size<span class="punctuation">.</span><span class="property">width</span> + margin_offset<span class="punctuation">,</span> size<span class="punctuation">.</span><span class="property">height</span> + margin_offset<span class="punctuation">),</span>
-                size<span class="punctuation">,</span>
-            <span class="punctuation">};</span>
+            let bounds = Bounds {
+                origin: screen.bounds().bottom_right()
+                    - point(size.width + margin_offset, size.height + margin_offset),
+                size,
+            };
 
-            cx<span class="punctuation">.</span><span class="property">open_window</span><span class="punctuation">(</span><span class="function">build_window_options</span><span class="punctuation">(</span>screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(),</span> bounds<span class="punctuation">),</span> |_<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                cx<span class="punctuation">.</span><span class="property">new</span><span class="punctuation">(</span>|_| <span class="type">WindowContent</span> <span class="punctuation">{</span>
-                    <span class="property">text</span><span class="punctuation">:</span> <span class="macro">format!</span><span class="punctuation">(</span><span class="string">&quot;Bottom Right {:?}&quot;</span><span class="punctuation">,</span> screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">()).</span><span class="property">into</span><span class="punctuation">(),</span>
-                    <span class="property">bg</span><span class="punctuation">:</span> gpui<span class="punctuation">::</span><span class="function">blue</span><span class="punctuation">(),</span>
-                    bounds<span class="punctuation">,</span>
-                <span class="punctuation">})</span>
-            <span class="punctuation">})</span>
-            <span class="punctuation">.</span><span class="property">unwrap</span><span class="punctuation">();</span>
+            cx.open_window(build_window_options(screen.id(), bounds), |_, cx| {
+                cx.new(|_| WindowContent {
+                    text: format!("Bottom Right {:?}", screen.id()).into(),
+                    bg: gpui::blue(),
+                    bounds,
+                })
+            })
+            .unwrap();
 
-            <span class="keyword">let</span> bounds = <span class="type">Bounds</span> <span class="punctuation">{</span>
-                <span class="property">origin</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span>screen<span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">().</span><span class="property">center</span><span class="punctuation">().</span><span class="property">x</span> - size<span class="punctuation">.</span><span class="property">center</span><span class="punctuation">().</span><span class="property">x</span><span class="punctuation">,</span> margin_offset<span class="punctuation">),</span>
-                size<span class="punctuation">,</span>
-            <span class="punctuation">};</span>
+            let bounds = Bounds {
+                origin: point(screen.bounds().center().x - size.center().x, margin_offset),
+                size,
+            };
 
-            cx<span class="punctuation">.</span><span class="property">open_window</span><span class="punctuation">(</span><span class="function">build_window_options</span><span class="punctuation">(</span>screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(),</span> bounds<span class="punctuation">),</span> |_<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                cx<span class="punctuation">.</span><span class="property">new</span><span class="punctuation">(</span>|_| <span class="type">WindowContent</span> <span class="punctuation">{</span>
-                    <span class="property">text</span><span class="punctuation">:</span> <span class="macro">format!</span><span class="punctuation">(</span><span class="string">&quot;Top Center {:?}&quot;</span><span class="punctuation">,</span> screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">()).</span><span class="property">into</span><span class="punctuation">(),</span>
-                    <span class="property">bg</span><span class="punctuation">:</span> gpui<span class="punctuation">::</span><span class="function">black</span><span class="punctuation">(),</span>
-                    bounds<span class="punctuation">,</span>
-                <span class="punctuation">})</span>
-            <span class="punctuation">})</span>
-            <span class="punctuation">.</span><span class="property">unwrap</span><span class="punctuation">();</span>
+            cx.open_window(build_window_options(screen.id(), bounds), |_, cx| {
+                cx.new(|_| WindowContent {
+                    text: format!("Top Center {:?}", screen.id()).into(),
+                    bg: gpui::black(),
+                    bounds,
+                })
+            })
+            .unwrap();
 
-            <span class="keyword">let</span> bounds = <span class="type">Bounds</span> <span class="punctuation">{</span>
-                <span class="property">origin</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span>margin_offset<span class="punctuation">,</span> screen<span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">().</span><span class="property">center</span><span class="punctuation">().</span><span class="property">y</span> - size<span class="punctuation">.</span><span class="property">center</span><span class="punctuation">().</span><span class="property">y</span><span class="punctuation">),</span>
-                size<span class="punctuation">,</span>
-            <span class="punctuation">};</span>
+            let bounds = Bounds {
+                origin: point(margin_offset, screen.bounds().center().y - size.center().y),
+                size,
+            };
 
-            cx<span class="punctuation">.</span><span class="property">open_window</span><span class="punctuation">(</span><span class="function">build_window_options</span><span class="punctuation">(</span>screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(),</span> bounds<span class="punctuation">),</span> |_<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                cx<span class="punctuation">.</span><span class="property">new</span><span class="punctuation">(</span>|_| <span class="type">WindowContent</span> <span class="punctuation">{</span>
-                    <span class="property">text</span><span class="punctuation">:</span> <span class="macro">format!</span><span class="punctuation">(</span><span class="string">&quot;Left Center {:?}&quot;</span><span class="punctuation">,</span> screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">()).</span><span class="property">into</span><span class="punctuation">(),</span>
-                    <span class="property">bg</span><span class="punctuation">:</span> gpui<span class="punctuation">::</span><span class="function">black</span><span class="punctuation">(),</span>
-                    bounds<span class="punctuation">,</span>
-                <span class="punctuation">})</span>
-            <span class="punctuation">})</span>
-            <span class="punctuation">.</span><span class="property">unwrap</span><span class="punctuation">();</span>
+            cx.open_window(build_window_options(screen.id(), bounds), |_, cx| {
+                cx.new(|_| WindowContent {
+                    text: format!("Left Center {:?}", screen.id()).into(),
+                    bg: gpui::black(),
+                    bounds,
+                })
+            })
+            .unwrap();
 
-            <span class="keyword">let</span> bounds = <span class="type">Bounds</span> <span class="punctuation">{</span>
-                <span class="property">origin</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span>
-                    screen<span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">().</span><span class="property">center</span><span class="punctuation">().</span><span class="property">x</span> - size<span class="punctuation">.</span><span class="property">center</span><span class="punctuation">().</span><span class="property">x</span><span class="punctuation">,</span>
-                    screen<span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">().</span><span class="property">center</span><span class="punctuation">().</span><span class="property">y</span> - size<span class="punctuation">.</span><span class="property">center</span><span class="punctuation">().</span><span class="property">y</span><span class="punctuation">,</span>
-                <span class="punctuation">),</span>
-                size<span class="punctuation">,</span>
-            <span class="punctuation">};</span>
+            let bounds = Bounds {
+                origin: point(
+                    screen.bounds().center().x - size.center().x,
+                    screen.bounds().center().y - size.center().y,
+                ),
+                size,
+            };
 
-            cx<span class="punctuation">.</span><span class="property">open_window</span><span class="punctuation">(</span><span class="function">build_window_options</span><span class="punctuation">(</span>screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(),</span> bounds<span class="punctuation">),</span> |_<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                cx<span class="punctuation">.</span><span class="property">new</span><span class="punctuation">(</span>|_| <span class="type">WindowContent</span> <span class="punctuation">{</span>
-                    <span class="property">text</span><span class="punctuation">:</span> <span class="macro">format!</span><span class="punctuation">(</span><span class="string">&quot;Center {:?}&quot;</span><span class="punctuation">,</span> screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">()).</span><span class="property">into</span><span class="punctuation">(),</span>
-                    <span class="property">bg</span><span class="punctuation">:</span> gpui<span class="punctuation">::</span><span class="function">black</span><span class="punctuation">(),</span>
-                    bounds<span class="punctuation">,</span>
-                <span class="punctuation">})</span>
-            <span class="punctuation">})</span>
-            <span class="punctuation">.</span><span class="property">unwrap</span><span class="punctuation">();</span>
+            cx.open_window(build_window_options(screen.id(), bounds), |_, cx| {
+                cx.new(|_| WindowContent {
+                    text: format!("Center {:?}", screen.id()).into(),
+                    bg: gpui::black(),
+                    bounds,
+                })
+            })
+            .unwrap();
 
-            <span class="keyword">let</span> bounds = <span class="type">Bounds</span> <span class="punctuation">{</span>
-                <span class="property">origin</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span>
-                    screen<span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">().</span><span class="property">size</span><span class="punctuation">.</span><span class="property">width</span> - size<span class="punctuation">.</span><span class="property">width</span> - margin_offset<span class="punctuation">,</span>
-                    screen<span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">().</span><span class="property">center</span><span class="punctuation">().</span><span class="property">y</span> - size<span class="punctuation">.</span><span class="property">center</span><span class="punctuation">().</span><span class="property">y</span><span class="punctuation">,</span>
-                <span class="punctuation">),</span>
-                size<span class="punctuation">,</span>
-            <span class="punctuation">};</span>
+            let bounds = Bounds {
+                origin: point(
+                    screen.bounds().size.width - size.width - margin_offset,
+                    screen.bounds().center().y - size.center().y,
+                ),
+                size,
+            };
 
-            cx<span class="punctuation">.</span><span class="property">open_window</span><span class="punctuation">(</span><span class="function">build_window_options</span><span class="punctuation">(</span>screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(),</span> bounds<span class="punctuation">),</span> |_<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                cx<span class="punctuation">.</span><span class="property">new</span><span class="punctuation">(</span>|_| <span class="type">WindowContent</span> <span class="punctuation">{</span>
-                    <span class="property">text</span><span class="punctuation">:</span> <span class="macro">format!</span><span class="punctuation">(</span><span class="string">&quot;Right Center {:?}&quot;</span><span class="punctuation">,</span> screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">()).</span><span class="property">into</span><span class="punctuation">(),</span>
-                    <span class="property">bg</span><span class="punctuation">:</span> gpui<span class="punctuation">::</span><span class="function">black</span><span class="punctuation">(),</span>
-                    bounds<span class="punctuation">,</span>
-                <span class="punctuation">})</span>
-            <span class="punctuation">})</span>
-            <span class="punctuation">.</span><span class="property">unwrap</span><span class="punctuation">();</span>
+            cx.open_window(build_window_options(screen.id(), bounds), |_, cx| {
+                cx.new(|_| WindowContent {
+                    text: format!("Right Center {:?}", screen.id()).into(),
+                    bg: gpui::black(),
+                    bounds,
+                })
+            })
+            .unwrap();
 
-            <span class="keyword">let</span> bounds = <span class="type">Bounds</span> <span class="punctuation">{</span>
-                <span class="property">origin</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span>
-                    screen<span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">().</span><span class="property">center</span><span class="punctuation">().</span><span class="property">x</span> - size<span class="punctuation">.</span><span class="property">center</span><span class="punctuation">().</span><span class="property">x</span><span class="punctuation">,</span>
-                    screen<span class="punctuation">.</span><span class="property">bounds</span><span class="punctuation">().</span><span class="property">size</span><span class="punctuation">.</span><span class="property">height</span> - size<span class="punctuation">.</span><span class="property">height</span> - margin_offset<span class="punctuation">,</span>
-                <span class="punctuation">),</span>
-                size<span class="punctuation">,</span>
-            <span class="punctuation">};</span>
+            let bounds = Bounds {
+                origin: point(
+                    screen.bounds().center().x - size.center().x,
+                    screen.bounds().size.height - size.height - margin_offset,
+                ),
+                size,
+            };
 
-            cx<span class="punctuation">.</span><span class="property">open_window</span><span class="punctuation">(</span><span class="function">build_window_options</span><span class="punctuation">(</span>screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(),</span> bounds<span class="punctuation">),</span> |_<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                cx<span class="punctuation">.</span><span class="property">new</span><span class="punctuation">(</span>|_| <span class="type">WindowContent</span> <span class="punctuation">{</span>
-                    <span class="property">text</span><span class="punctuation">:</span> <span class="macro">format!</span><span class="punctuation">(</span><span class="string">&quot;Bottom Center {:?}&quot;</span><span class="punctuation">,</span> screen<span class="punctuation">.</span><span class="property">id</span><span class="punctuation">()).</span><span class="property">into</span><span class="punctuation">(),</span>
-                    <span class="property">bg</span><span class="punctuation">:</span> gpui<span class="punctuation">::</span><span class="function">black</span><span class="punctuation">(),</span>
-                    bounds<span class="punctuation">,</span>
-                <span class="punctuation">})</span>
-            <span class="punctuation">})</span>
-            <span class="punctuation">.</span><span class="property">unwrap</span><span class="punctuation">();</span>
-        <span class="punctuation">}</span>
-    <span class="punctuation">});</span>
-<span class="punctuation">}</span></code></pre>
+            cx.open_window(build_window_options(screen.id(), bounds), |_, cx| {
+                cx.new(|_| WindowContent {
+                    text: format!("Bottom Center {:?}", screen.id()).into(),
+                    bg: gpui::black(),
+                    bounds,
+                })
+            })
+            .unwrap();
+        }
+    });
+}
+```

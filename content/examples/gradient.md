@@ -4,266 +4,268 @@ description = ""
 template = "page.html"
 
 [extra]
-run_command = "cargo run -p gpui --example gradient"
-source_file = "crates/gpui/examples/gradient.rs"
+run_command = "cargo run --example gradient"
+source_file = "examples/gradient.rs"
 +++
 
 ## Source Code
 
-<pre><code class="language-rust"><span class="keyword">use</span> gpui<span class="punctuation">::{</span>
-    <span class="constructor">App</span><span class="punctuation">,</span> <span class="constructor">Application</span><span class="punctuation">,</span> <span class="constructor">Bounds</span><span class="punctuation">,</span> <span class="constructor">ColorSpace</span><span class="punctuation">,</span> <span class="constructor">Context</span><span class="punctuation">,</span> <span class="constructor">Half</span><span class="punctuation">,</span> <span class="constructor">Render</span><span class="punctuation">,</span> <span class="constructor">Window</span><span class="punctuation">,</span> <span class="constructor">WindowOptions</span><span class="punctuation">,</span> canvas<span class="punctuation">,</span>
-    div<span class="punctuation">,</span> linear_color_stop<span class="punctuation">,</span> linear_gradient<span class="punctuation">,</span> point<span class="punctuation">,</span> prelude<span class="punctuation">::</span><span class="operator">*</span><span class="punctuation">,</span> px<span class="punctuation">,</span> size<span class="punctuation">,</span>
-<span class="punctuation">};</span>
+```rust
+use gpui::{
+    App, Application, Bounds, ColorSpace, Context, Half, Render, Window, WindowOptions, canvas,
+    div, linear_color_stop, linear_gradient, point, prelude::*, px, size,
+};
 
-<span class="keyword">struct</span> <span class="type">GradientViewer</span> <span class="punctuation">{</span>
-    <span class="property">color_space</span><span class="punctuation">:</span> <span class="type">ColorSpace</span><span class="punctuation">,</span>
-<span class="punctuation">}</span>
+struct GradientViewer {
+    color_space: ColorSpace,
+}
 
-<span class="keyword">impl</span> <span class="type">GradientViewer</span> <span class="punctuation">{</span>
-    <span class="keyword">fn</span> <span class="function">new</span><span class="punctuation">()</span> -&gt; <span class="type">Self</span> <span class="punctuation">{</span>
-        <span class="type">Self</span> <span class="punctuation">{</span>
-            <span class="property">color_space</span><span class="punctuation">:</span> <span class="constructor">ColorSpace</span><span class="punctuation">::</span><span class="function">default</span><span class="punctuation">(),</span>
-        <span class="punctuation">}</span>
-    <span class="punctuation">}</span>
-<span class="punctuation">}</span>
+impl GradientViewer {
+    fn new() -> Self {
+        Self {
+            color_space: ColorSpace::default(),
+        }
+    }
+}
 
-<span class="keyword">impl</span> <span class="type">Render</span> <span class="keyword">for</span> <span class="type">GradientViewer</span> <span class="punctuation">{</span>
-    <span class="keyword">fn</span> <span class="function">render</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="keyword">mut</span> <span class="variable">self</span><span class="punctuation">,</span> _<span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Window</span><span class="punctuation">,</span> <span class="variable">cx</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Context</span><span class="punctuation">&lt;</span><span class="type">Self</span><span class="punctuation">&gt;)</span> -&gt; <span class="keyword">impl</span> <span class="type">IntoElement</span> <span class="punctuation">{</span>
-        <span class="keyword">let</span> color_space = <span class="variable">self</span><span class="punctuation">.</span><span class="property">color_space</span><span class="punctuation">;</span>
+impl Render for GradientViewer {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let color_space = self.color_space;
 
-        <span class="function">div</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">white</span><span class="punctuation">())</span>
-            <span class="punctuation">.</span><span class="property">size_full</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">p_4</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">flex_col</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">gap_3</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                <span class="function">div</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">gap_2</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">justify_between</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">items_center</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="string">&quot;Gradient Examples&quot;</span><span class="punctuation">)</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">().</span><span class="property">flex</span><span class="punctuation">().</span><span class="property">gap_2</span><span class="punctuation">().</span><span class="property">items_center</span><span class="punctuation">().</span><span class="property">child</span><span class="punctuation">(</span>
-                            <span class="function">div</span><span class="punctuation">()</span>
-                                <span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(</span><span class="string">&quot;method&quot;</span><span class="punctuation">)</span>
-                                <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                                <span class="punctuation">.</span><span class="property">px_3</span><span class="punctuation">()</span>
-                                <span class="punctuation">.</span><span class="property">py_1</span><span class="punctuation">()</span>
-                                <span class="punctuation">.</span><span class="property">text_sm</span><span class="punctuation">()</span>
-                                <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">black</span><span class="punctuation">())</span>
-                                <span class="punctuation">.</span><span class="property">text_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">white</span><span class="punctuation">())</span>
-                                <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="macro">format!</span><span class="punctuation">(</span><span class="string">&quot;{}&quot;</span><span class="punctuation">,</span> color_space<span class="punctuation">))</span>
-                                <span class="punctuation">.</span><span class="property">active</span><span class="punctuation">(</span>|this| this<span class="punctuation">.</span><span class="property">opacity</span><span class="punctuation">(</span><span class="constant">0.8</span><span class="punctuation">))</span>
-                                <span class="punctuation">.</span><span class="property">on_click</span><span class="punctuation">(</span>cx<span class="punctuation">.</span><span class="property">listener</span><span class="punctuation">(</span><span class="keyword">move</span> |this<span class="punctuation">,</span> _<span class="punctuation">,</span> _<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                                    this<span class="punctuation">.</span><span class="property">color_space</span> = <span class="keyword">match</span> this<span class="punctuation">.</span><span class="property">color_space</span> <span class="punctuation">{</span>
-                                        <span class="constructor">ColorSpace</span><span class="punctuation">::</span><span class="constructor">Oklab</span> =&gt; <span class="constructor">ColorSpace</span><span class="punctuation">::</span><span class="constructor">Srgb</span><span class="punctuation">,</span>
-                                        <span class="constructor">ColorSpace</span><span class="punctuation">::</span><span class="constructor">Srgb</span> =&gt; <span class="constructor">ColorSpace</span><span class="punctuation">::</span><span class="constructor">Oklab</span><span class="punctuation">,</span>
-                                    <span class="punctuation">};</span>
-                                    cx<span class="punctuation">.</span><span class="property">notify</span><span class="punctuation">();</span>
-                                <span class="punctuation">})),</span>
-                        <span class="punctuation">),</span>
-                    <span class="punctuation">),</span>
-            <span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                <span class="function">div</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex_1</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">gap_3</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">size_full</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">rounded_xl</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">items_center</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">justify_center</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">red</span><span class="punctuation">())</span>
-                            <span class="punctuation">.</span><span class="property">text_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">white</span><span class="punctuation">())</span>
-                            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="string">&quot;Solid Color&quot;</span><span class="punctuation">),</span>
-                    <span class="punctuation">)</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">size_full</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">rounded_xl</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">items_center</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">justify_center</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">blue</span><span class="punctuation">())</span>
-                            <span class="punctuation">.</span><span class="property">text_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">white</span><span class="punctuation">())</span>
-                            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="string">&quot;Solid Color&quot;</span><span class="punctuation">),</span>
-                    <span class="punctuation">),</span>
-            <span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                <span class="function">div</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex_1</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">gap_3</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">h_24</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">text_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">white</span><span class="punctuation">())</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">().</span><span class="property">flex_1</span><span class="punctuation">().</span><span class="property">rounded_xl</span><span class="punctuation">().</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">linear_gradient</span><span class="punctuation">(</span>
-                            <span class="constant">45.</span><span class="punctuation">,</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">red</span><span class="punctuation">(),</span> <span class="constant">0.</span><span class="punctuation">),</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">blue</span><span class="punctuation">(),</span> <span class="constant">1.</span><span class="punctuation">),</span>
-                        <span class="punctuation">)</span>
-                        <span class="punctuation">.</span><span class="property">color_space</span><span class="punctuation">(</span>color_space<span class="punctuation">)),</span>
-                    <span class="punctuation">)</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">().</span><span class="property">flex_1</span><span class="punctuation">().</span><span class="property">rounded_xl</span><span class="punctuation">().</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">linear_gradient</span><span class="punctuation">(</span>
-                            <span class="constant">135.</span><span class="punctuation">,</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">red</span><span class="punctuation">(),</span> <span class="constant">0.</span><span class="punctuation">),</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">green</span><span class="punctuation">(),</span> <span class="constant">1.</span><span class="punctuation">),</span>
-                        <span class="punctuation">)</span>
-                        <span class="punctuation">.</span><span class="property">color_space</span><span class="punctuation">(</span>color_space<span class="punctuation">)),</span>
-                    <span class="punctuation">)</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">().</span><span class="property">flex_1</span><span class="punctuation">().</span><span class="property">rounded_xl</span><span class="punctuation">().</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">linear_gradient</span><span class="punctuation">(</span>
-                            <span class="constant">225.</span><span class="punctuation">,</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">green</span><span class="punctuation">(),</span> <span class="constant">0.</span><span class="punctuation">),</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">blue</span><span class="punctuation">(),</span> <span class="constant">1.</span><span class="punctuation">),</span>
-                        <span class="punctuation">)</span>
-                        <span class="punctuation">.</span><span class="property">color_space</span><span class="punctuation">(</span>color_space<span class="punctuation">)),</span>
-                    <span class="punctuation">)</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">().</span><span class="property">flex_1</span><span class="punctuation">().</span><span class="property">rounded_xl</span><span class="punctuation">().</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">linear_gradient</span><span class="punctuation">(</span>
-                            <span class="constant">315.</span><span class="punctuation">,</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">green</span><span class="punctuation">(),</span> <span class="constant">0.</span><span class="punctuation">),</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">yellow</span><span class="punctuation">(),</span> <span class="constant">1.</span><span class="punctuation">),</span>
-                        <span class="punctuation">)</span>
-                        <span class="punctuation">.</span><span class="property">color_space</span><span class="punctuation">(</span>color_space<span class="punctuation">)),</span>
-                    <span class="punctuation">),</span>
-            <span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                <span class="function">div</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex_1</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">gap_3</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">h_24</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">text_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">white</span><span class="punctuation">())</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">().</span><span class="property">flex_1</span><span class="punctuation">().</span><span class="property">rounded_xl</span><span class="punctuation">().</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">linear_gradient</span><span class="punctuation">(</span>
-                            <span class="constant">0.</span><span class="punctuation">,</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">red</span><span class="punctuation">(),</span> <span class="constant">0.</span><span class="punctuation">),</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">white</span><span class="punctuation">(),</span> <span class="constant">1.</span><span class="punctuation">),</span>
-                        <span class="punctuation">)</span>
-                        <span class="punctuation">.</span><span class="property">color_space</span><span class="punctuation">(</span>color_space<span class="punctuation">)),</span>
-                    <span class="punctuation">)</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">().</span><span class="property">flex_1</span><span class="punctuation">().</span><span class="property">rounded_xl</span><span class="punctuation">().</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">linear_gradient</span><span class="punctuation">(</span>
-                            <span class="constant">90.</span><span class="punctuation">,</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">blue</span><span class="punctuation">(),</span> <span class="constant">0.</span><span class="punctuation">),</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">white</span><span class="punctuation">(),</span> <span class="constant">1.</span><span class="punctuation">),</span>
-                        <span class="punctuation">)</span>
-                        <span class="punctuation">.</span><span class="property">color_space</span><span class="punctuation">(</span>color_space<span class="punctuation">)),</span>
-                    <span class="punctuation">)</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">().</span><span class="property">flex_1</span><span class="punctuation">().</span><span class="property">rounded_xl</span><span class="punctuation">().</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">linear_gradient</span><span class="punctuation">(</span>
-                            <span class="constant">180.</span><span class="punctuation">,</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">green</span><span class="punctuation">(),</span> <span class="constant">0.</span><span class="punctuation">),</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">white</span><span class="punctuation">(),</span> <span class="constant">1.</span><span class="punctuation">),</span>
-                        <span class="punctuation">)</span>
-                        <span class="punctuation">.</span><span class="property">color_space</span><span class="punctuation">(</span>color_space<span class="punctuation">)),</span>
-                    <span class="punctuation">)</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">().</span><span class="property">flex_1</span><span class="punctuation">().</span><span class="property">rounded_xl</span><span class="punctuation">().</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">linear_gradient</span><span class="punctuation">(</span>
-                            <span class="constant">360.</span><span class="punctuation">,</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">yellow</span><span class="punctuation">(),</span> <span class="constant">0.</span><span class="punctuation">),</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">white</span><span class="punctuation">(),</span> <span class="constant">1.</span><span class="punctuation">),</span>
-                        <span class="punctuation">)</span>
-                        <span class="punctuation">.</span><span class="property">color_space</span><span class="punctuation">(</span>color_space<span class="punctuation">)),</span>
-                    <span class="punctuation">),</span>
-            <span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                <span class="function">div</span><span class="punctuation">().</span><span class="property">flex_1</span><span class="punctuation">().</span><span class="property">rounded_xl</span><span class="punctuation">().</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">linear_gradient</span><span class="punctuation">(</span>
-                    <span class="constant">0.</span><span class="punctuation">,</span>
-                    <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">green</span><span class="punctuation">(),</span> <span class="constant">0.05</span><span class="punctuation">),</span>
-                    <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">yellow</span><span class="punctuation">(),</span> <span class="constant">0.95</span><span class="punctuation">),</span>
-                <span class="punctuation">)</span>
-                <span class="punctuation">.</span><span class="property">color_space</span><span class="punctuation">(</span>color_space<span class="punctuation">)),</span>
-            <span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                <span class="function">div</span><span class="punctuation">().</span><span class="property">flex_1</span><span class="punctuation">().</span><span class="property">rounded_xl</span><span class="punctuation">().</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">linear_gradient</span><span class="punctuation">(</span>
-                    <span class="constant">90.</span><span class="punctuation">,</span>
-                    <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">blue</span><span class="punctuation">(),</span> <span class="constant">0.05</span><span class="punctuation">),</span>
-                    <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">red</span><span class="punctuation">(),</span> <span class="constant">0.95</span><span class="punctuation">),</span>
-                <span class="punctuation">)</span>
-                <span class="punctuation">.</span><span class="property">color_space</span><span class="punctuation">(</span>color_space<span class="punctuation">)),</span>
-            <span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                <span class="function">div</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex_1</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">gap_3</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">().</span><span class="property">flex</span><span class="punctuation">().</span><span class="property">flex_1</span><span class="punctuation">().</span><span class="property">gap_3</span><span class="punctuation">().</span><span class="property">child</span><span class="punctuation">(</span>
-                            <span class="function">div</span><span class="punctuation">().</span><span class="property">flex_1</span><span class="punctuation">().</span><span class="property">rounded_xl</span><span class="punctuation">().</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">linear_gradient</span><span class="punctuation">(</span>
-                                <span class="constant">90.</span><span class="punctuation">,</span>
-                                <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">blue</span><span class="punctuation">(),</span> <span class="constant">0.5</span><span class="punctuation">),</span>
-                                <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">red</span><span class="punctuation">(),</span> <span class="constant">0.5</span><span class="punctuation">),</span>
-                            <span class="punctuation">)</span>
-                            <span class="punctuation">.</span><span class="property">color_space</span><span class="punctuation">(</span>color_space<span class="punctuation">)),</span>
-                        <span class="punctuation">),</span>
-                    <span class="punctuation">)</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">().</span><span class="property">flex_1</span><span class="punctuation">().</span><span class="property">rounded_xl</span><span class="punctuation">().</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">linear_gradient</span><span class="punctuation">(</span>
-                            <span class="constant">180.</span><span class="punctuation">,</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">green</span><span class="punctuation">(),</span> <span class="constant">0.</span><span class="punctuation">),</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">blue</span><span class="punctuation">(),</span> <span class="constant">0.5</span><span class="punctuation">),</span>
-                        <span class="punctuation">)</span>
-                        <span class="punctuation">.</span><span class="property">color_space</span><span class="punctuation">(</span>color_space<span class="punctuation">)),</span>
-                    <span class="punctuation">),</span>
-            <span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="function">div</span><span class="punctuation">().</span><span class="property">h_24</span><span class="punctuation">().</span><span class="property">child</span><span class="punctuation">(</span><span class="function">canvas</span><span class="punctuation">(</span>
-                <span class="keyword">move</span> |_<span class="punctuation">,</span> _<span class="punctuation">,</span> _| <span class="punctuation">{},</span>
-                <span class="keyword">move</span> |bounds<span class="punctuation">,</span> _<span class="punctuation">,</span> window<span class="punctuation">,</span> _| <span class="punctuation">{</span>
-                    <span class="keyword">let</span> size = <span class="function">size</span><span class="punctuation">(</span>bounds<span class="punctuation">.</span><span class="property">size</span><span class="punctuation">.</span><span class="property">width</span> <span class="operator">*</span> <span class="constant">0.8</span><span class="punctuation">,</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">80.</span><span class="punctuation">));</span>
-                    <span class="keyword">let</span> square_bounds = <span class="type">Bounds</span> <span class="punctuation">{</span>
-                        <span class="property">origin</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span>
-                            bounds<span class="punctuation">.</span><span class="property">size</span><span class="punctuation">.</span><span class="property">width</span><span class="punctuation">.</span><span class="property">half</span><span class="punctuation">()</span> - size<span class="punctuation">.</span><span class="property">width</span><span class="punctuation">.</span><span class="property">half</span><span class="punctuation">(),</span>
-                            bounds<span class="punctuation">.</span><span class="property">origin</span><span class="punctuation">.</span><span class="property">y</span><span class="punctuation">,</span>
-                        <span class="punctuation">),</span>
-                        size<span class="punctuation">,</span>
-                    <span class="punctuation">};</span>
-                    <span class="keyword">let</span> height = square_bounds<span class="punctuation">.</span><span class="property">size</span><span class="punctuation">.</span><span class="property">height</span><span class="punctuation">;</span>
-                    <span class="keyword">let</span> horizontal_offset = height<span class="punctuation">;</span>
-                    <span class="keyword">let</span> vertical_offset = <span class="function">px</span><span class="punctuation">(</span><span class="constant">30.</span><span class="punctuation">);</span>
-                    <span class="keyword">let</span> <span class="keyword">mut</span> builder = gpui<span class="punctuation">::</span><span class="constructor">PathBuilder</span><span class="punctuation">::</span><span class="function">fill</span><span class="punctuation">();</span>
-                    builder<span class="punctuation">.</span><span class="property">move_to</span><span class="punctuation">(</span>square_bounds<span class="punctuation">.</span><span class="property">bottom_left</span><span class="punctuation">());</span>
+        div()
+            .bg(gpui::white())
+            .size_full()
+            .p_4()
+            .flex()
+            .flex_col()
+            .gap_3()
+            .child(
+                div()
+                    .flex()
+                    .gap_2()
+                    .justify_between()
+                    .items_center()
+                    .child("Gradient Examples")
+                    .child(
+                        div().flex().gap_2().items_center().child(
+                            div()
+                                .id("method")
+                                .flex()
+                                .px_3()
+                                .py_1()
+                                .text_sm()
+                                .bg(gpui::black())
+                                .text_color(gpui::white())
+                                .child(format!("{}", color_space))
+                                .active(|this| this.opacity(0.8))
+                                .on_click(cx.listener(move |this, _, _, cx| {
+                                    this.color_space = match this.color_space {
+                                        ColorSpace::Oklab => ColorSpace::Srgb,
+                                        ColorSpace::Srgb => ColorSpace::Oklab,
+                                    };
+                                    cx.notify();
+                                })),
+                        ),
+                    ),
+            )
+            .child(
+                div()
+                    .flex()
+                    .flex_1()
+                    .gap_3()
+                    .child(
+                        div()
+                            .size_full()
+                            .rounded_xl()
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .bg(gpui::red())
+                            .text_color(gpui::white())
+                            .child("Solid Color"),
+                    )
+                    .child(
+                        div()
+                            .size_full()
+                            .rounded_xl()
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .bg(gpui::blue())
+                            .text_color(gpui::white())
+                            .child("Solid Color"),
+                    ),
+            )
+            .child(
+                div()
+                    .flex()
+                    .flex_1()
+                    .gap_3()
+                    .h_24()
+                    .text_color(gpui::white())
+                    .child(
+                        div().flex_1().rounded_xl().bg(linear_gradient(
+                            45.,
+                            linear_color_stop(gpui::red(), 0.),
+                            linear_color_stop(gpui::blue(), 1.),
+                        )
+                        .color_space(color_space)),
+                    )
+                    .child(
+                        div().flex_1().rounded_xl().bg(linear_gradient(
+                            135.,
+                            linear_color_stop(gpui::red(), 0.),
+                            linear_color_stop(gpui::green(), 1.),
+                        )
+                        .color_space(color_space)),
+                    )
+                    .child(
+                        div().flex_1().rounded_xl().bg(linear_gradient(
+                            225.,
+                            linear_color_stop(gpui::green(), 0.),
+                            linear_color_stop(gpui::blue(), 1.),
+                        )
+                        .color_space(color_space)),
+                    )
+                    .child(
+                        div().flex_1().rounded_xl().bg(linear_gradient(
+                            315.,
+                            linear_color_stop(gpui::green(), 0.),
+                            linear_color_stop(gpui::yellow(), 1.),
+                        )
+                        .color_space(color_space)),
+                    ),
+            )
+            .child(
+                div()
+                    .flex()
+                    .flex_1()
+                    .gap_3()
+                    .h_24()
+                    .text_color(gpui::white())
+                    .child(
+                        div().flex_1().rounded_xl().bg(linear_gradient(
+                            0.,
+                            linear_color_stop(gpui::red(), 0.),
+                            linear_color_stop(gpui::white(), 1.),
+                        )
+                        .color_space(color_space)),
+                    )
+                    .child(
+                        div().flex_1().rounded_xl().bg(linear_gradient(
+                            90.,
+                            linear_color_stop(gpui::blue(), 0.),
+                            linear_color_stop(gpui::white(), 1.),
+                        )
+                        .color_space(color_space)),
+                    )
+                    .child(
+                        div().flex_1().rounded_xl().bg(linear_gradient(
+                            180.,
+                            linear_color_stop(gpui::green(), 0.),
+                            linear_color_stop(gpui::white(), 1.),
+                        )
+                        .color_space(color_space)),
+                    )
+                    .child(
+                        div().flex_1().rounded_xl().bg(linear_gradient(
+                            360.,
+                            linear_color_stop(gpui::yellow(), 0.),
+                            linear_color_stop(gpui::white(), 1.),
+                        )
+                        .color_space(color_space)),
+                    ),
+            )
+            .child(
+                div().flex_1().rounded_xl().bg(linear_gradient(
+                    0.,
+                    linear_color_stop(gpui::green(), 0.05),
+                    linear_color_stop(gpui::yellow(), 0.95),
+                )
+                .color_space(color_space)),
+            )
+            .child(
+                div().flex_1().rounded_xl().bg(linear_gradient(
+                    90.,
+                    linear_color_stop(gpui::blue(), 0.05),
+                    linear_color_stop(gpui::red(), 0.95),
+                )
+                .color_space(color_space)),
+            )
+            .child(
+                div()
+                    .flex()
+                    .flex_1()
+                    .gap_3()
+                    .child(
+                        div().flex().flex_1().gap_3().child(
+                            div().flex_1().rounded_xl().bg(linear_gradient(
+                                90.,
+                                linear_color_stop(gpui::blue(), 0.5),
+                                linear_color_stop(gpui::red(), 0.5),
+                            )
+                            .color_space(color_space)),
+                        ),
+                    )
+                    .child(
+                        div().flex_1().rounded_xl().bg(linear_gradient(
+                            180.,
+                            linear_color_stop(gpui::green(), 0.),
+                            linear_color_stop(gpui::blue(), 0.5),
+                        )
+                        .color_space(color_space)),
+                    ),
+            )
+            .child(div().h_24().child(canvas(
+                move |_, _, _| {},
+                move |bounds, _, window, _| {
+                    let size = size(bounds.size.width * 0.8, px(80.));
+                    let square_bounds = Bounds {
+                        origin: point(
+                            bounds.size.width.half() - size.width.half(),
+                            bounds.origin.y,
+                        ),
+                        size,
+                    };
+                    let height = square_bounds.size.height;
+                    let horizontal_offset = height;
+                    let vertical_offset = px(30.);
+                    let mut builder = gpui::PathBuilder::fill();
+                    builder.move_to(square_bounds.bottom_left());
                     builder
-                        <span class="punctuation">.</span><span class="property">line_to</span><span class="punctuation">(</span>square_bounds<span class="punctuation">.</span><span class="property">origin</span> + <span class="function">point</span><span class="punctuation">(</span>horizontal_offset<span class="punctuation">,</span> vertical_offset<span class="punctuation">));</span>
-                    builder<span class="punctuation">.</span><span class="property">line_to</span><span class="punctuation">(</span>
-                        square_bounds<span class="punctuation">.</span><span class="property">top_right</span><span class="punctuation">()</span> + <span class="function">point</span><span class="punctuation">(</span>-horizontal_offset<span class="punctuation">,</span> vertical_offset<span class="punctuation">),</span>
-                    <span class="punctuation">);</span>
+                        .line_to(square_bounds.origin + point(horizontal_offset, vertical_offset));
+                    builder.line_to(
+                        square_bounds.top_right() + point(-horizontal_offset, vertical_offset),
+                    );
 
-                    builder<span class="punctuation">.</span><span class="property">line_to</span><span class="punctuation">(</span>square_bounds<span class="punctuation">.</span><span class="property">bottom_right</span><span class="punctuation">());</span>
-                    builder<span class="punctuation">.</span><span class="property">line_to</span><span class="punctuation">(</span>square_bounds<span class="punctuation">.</span><span class="property">bottom_left</span><span class="punctuation">());</span>
-                    <span class="keyword">let</span> path = builder<span class="punctuation">.</span><span class="property">build</span><span class="punctuation">().</span><span class="property">unwrap</span><span class="punctuation">();</span>
-                    window<span class="punctuation">.</span><span class="property">paint_path</span><span class="punctuation">(</span>
-                        path<span class="punctuation">,</span>
-                        <span class="function">linear_gradient</span><span class="punctuation">(</span>
-                            <span class="constant">180.</span><span class="punctuation">,</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">red</span><span class="punctuation">(),</span> <span class="constant">0.</span><span class="punctuation">),</span>
-                            <span class="function">linear_color_stop</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">blue</span><span class="punctuation">(),</span> <span class="constant">1.</span><span class="punctuation">),</span>
-                        <span class="punctuation">)</span>
-                        <span class="punctuation">.</span><span class="property">color_space</span><span class="punctuation">(</span>color_space<span class="punctuation">),</span>
-                    <span class="punctuation">);</span>
-                <span class="punctuation">},</span>
-            <span class="punctuation">)))</span>
-    <span class="punctuation">}</span>
-<span class="punctuation">}</span>
+                    builder.line_to(square_bounds.bottom_right());
+                    builder.line_to(square_bounds.bottom_left());
+                    let path = builder.build().unwrap();
+                    window.paint_path(
+                        path,
+                        linear_gradient(
+                            180.,
+                            linear_color_stop(gpui::red(), 0.),
+                            linear_color_stop(gpui::blue(), 1.),
+                        )
+                        .color_space(color_space),
+                    );
+                },
+            )))
+    }
+}
 
-<span class="keyword">fn</span> <span class="function">main</span><span class="punctuation">()</span> <span class="punctuation">{</span>
-    <span class="constructor">Application</span><span class="punctuation">::</span><span class="function">new</span><span class="punctuation">().</span><span class="property">run</span><span class="punctuation">(</span>|<span class="variable">cx</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">App</span>| <span class="punctuation">{</span>
-        cx<span class="punctuation">.</span><span class="property">open_window</span><span class="punctuation">(</span>
-            <span class="type">WindowOptions</span> <span class="punctuation">{</span>
-                <span class="property">focus</span><span class="punctuation">:</span> <span class="constant">true</span><span class="punctuation">,</span>
-                ..<span class="constructor">Default</span><span class="punctuation">::</span><span class="function">default</span><span class="punctuation">()</span>
-            <span class="punctuation">},</span>
-            |_<span class="punctuation">,</span> cx| cx<span class="punctuation">.</span><span class="property">new</span><span class="punctuation">(</span>|_| <span class="constructor">GradientViewer</span><span class="punctuation">::</span><span class="function">new</span><span class="punctuation">()),</span>
-        <span class="punctuation">)</span>
-        <span class="punctuation">.</span><span class="property">unwrap</span><span class="punctuation">();</span>
-        cx<span class="punctuation">.</span><span class="property">activate</span><span class="punctuation">(</span><span class="constant">true</span><span class="punctuation">);</span>
-    <span class="punctuation">});</span>
-<span class="punctuation">}</span></code></pre>
+fn main() {
+    Application::new().run(|cx: &mut App| {
+        cx.open_window(
+            WindowOptions {
+                focus: true,
+                ..Default::default()
+            },
+            |_, cx| cx.new(|_| GradientViewer::new()),
+        )
+        .unwrap();
+        cx.activate(true);
+    });
+}
+```

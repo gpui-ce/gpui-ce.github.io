@@ -4,223 +4,225 @@ description = ""
 template = "page.html"
 
 [extra]
-run_command = "cargo run -p gpui --example focus_visible"
-source_file = "crates/gpui/examples/focus_visible.rs"
+run_command = "cargo run --example focus_visible"
+source_file = "examples/focus_visible.rs"
 +++
 
 ## Source Code
 
-<pre><code class="language-rust"><span class="keyword">use</span> gpui<span class="punctuation">::{</span>
-    <span class="constructor">App</span><span class="punctuation">,</span> <span class="constructor">Application</span><span class="punctuation">,</span> <span class="constructor">Bounds</span><span class="punctuation">,</span> <span class="constructor">Context</span><span class="punctuation">,</span> <span class="constructor">Div</span><span class="punctuation">,</span> <span class="constructor">ElementId</span><span class="punctuation">,</span> <span class="constructor">FocusHandle</span><span class="punctuation">,</span> <span class="constructor">KeyBinding</span><span class="punctuation">,</span> <span class="constructor">SharedString</span><span class="punctuation">,</span>
-    <span class="constructor">Stateful</span><span class="punctuation">,</span> <span class="constructor">Window</span><span class="punctuation">,</span> <span class="constructor">WindowBounds</span><span class="punctuation">,</span> <span class="constructor">WindowOptions</span><span class="punctuation">,</span> actions<span class="punctuation">,</span> div<span class="punctuation">,</span> prelude<span class="punctuation">::</span><span class="operator">*</span><span class="punctuation">,</span> px<span class="punctuation">,</span> size<span class="punctuation">,</span>
-<span class="punctuation">};</span>
+```rust
+use gpui::{
+    App, Application, Bounds, Context, Div, ElementId, FocusHandle, KeyBinding, SharedString,
+    Stateful, Window, WindowBounds, WindowOptions, actions, div, prelude::*, px, size,
+};
 
-<span class="macro">actions!</span><span class="punctuation">(</span>example<span class="punctuation">,</span> <span class="punctuation">[</span><span class="constructor">Tab</span><span class="punctuation">,</span> <span class="constructor">TabPrev</span><span class="punctuation">,</span> <span class="constructor">Quit</span><span class="punctuation">]);</span>
+actions!(example, [Tab, TabPrev, Quit]);
 
-<span class="keyword">struct</span> <span class="type">Example</span> <span class="punctuation">{</span>
-    <span class="property">focus_handle</span><span class="punctuation">:</span> <span class="type">FocusHandle</span><span class="punctuation">,</span>
-    <span class="property">items</span><span class="punctuation">:</span> <span class="type">Vec</span><span class="punctuation">&lt;(</span><span class="type">FocusHandle</span><span class="punctuation">,</span> <span class="operator">&amp;&#39;</span><span class="label">static</span> <span class="type">str</span><span class="punctuation">)&gt;,</span>
-    <span class="property">message</span><span class="punctuation">:</span> <span class="type">SharedString</span><span class="punctuation">,</span>
-<span class="punctuation">}</span>
+struct Example {
+    focus_handle: FocusHandle,
+    items: Vec<(FocusHandle, &'static str)>,
+    message: SharedString,
+}
 
-<span class="keyword">impl</span> <span class="type">Example</span> <span class="punctuation">{</span>
-    <span class="keyword">fn</span> <span class="function">new</span><span class="punctuation">(</span><span class="variable">window</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Window</span><span class="punctuation">,</span> <span class="variable">cx</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Context</span><span class="punctuation">&lt;</span><span class="type">Self</span><span class="punctuation">&gt;)</span> -&gt; <span class="type">Self</span> <span class="punctuation">{</span>
-        <span class="keyword">let</span> items = <span class="macro">vec!</span><span class="punctuation">[</span>
-            <span class="punctuation">(</span>
-                cx<span class="punctuation">.</span><span class="property">focus_handle</span><span class="punctuation">().</span><span class="property">tab_index</span><span class="punctuation">(</span><span class="constant">1</span><span class="punctuation">).</span><span class="property">tab_stop</span><span class="punctuation">(</span><span class="constant">true</span><span class="punctuation">),</span>
-                <span class="string">&quot;Button with .focus() - always shows border when focused&quot;</span><span class="punctuation">,</span>
-            <span class="punctuation">),</span>
-            <span class="punctuation">(</span>
-                cx<span class="punctuation">.</span><span class="property">focus_handle</span><span class="punctuation">().</span><span class="property">tab_index</span><span class="punctuation">(</span><span class="constant">2</span><span class="punctuation">).</span><span class="property">tab_stop</span><span class="punctuation">(</span><span class="constant">true</span><span class="punctuation">),</span>
-                <span class="string">&quot;Button with .focus_visible() - only shows border with keyboard&quot;</span><span class="punctuation">,</span>
-            <span class="punctuation">),</span>
-            <span class="punctuation">(</span>
-                cx<span class="punctuation">.</span><span class="property">focus_handle</span><span class="punctuation">().</span><span class="property">tab_index</span><span class="punctuation">(</span><span class="constant">3</span><span class="punctuation">).</span><span class="property">tab_stop</span><span class="punctuation">(</span><span class="constant">true</span><span class="punctuation">),</span>
-                <span class="string">&quot;Button with both .focus() and .focus_visible()&quot;</span><span class="punctuation">,</span>
-            <span class="punctuation">),</span>
-        <span class="punctuation">];</span>
+impl Example {
+    fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
+        let items = vec![
+            (
+                cx.focus_handle().tab_index(1).tab_stop(true),
+                "Button with .focus() - always shows border when focused",
+            ),
+            (
+                cx.focus_handle().tab_index(2).tab_stop(true),
+                "Button with .focus_visible() - only shows border with keyboard",
+            ),
+            (
+                cx.focus_handle().tab_index(3).tab_stop(true),
+                "Button with both .focus() and .focus_visible()",
+            ),
+        ];
 
-        <span class="keyword">let</span> focus_handle = cx<span class="punctuation">.</span><span class="property">focus_handle</span><span class="punctuation">();</span>
-        window<span class="punctuation">.</span><span class="property">focus</span><span class="punctuation">(</span><span class="operator">&amp;</span>focus_handle<span class="punctuation">);</span>
+        let focus_handle = cx.focus_handle();
+        window.focus(&focus_handle);
 
-        <span class="type">Self</span> <span class="punctuation">{</span>
-            focus_handle<span class="punctuation">,</span>
-            items<span class="punctuation">,</span>
-            <span class="property">message</span><span class="punctuation">:</span> <span class="constructor">SharedString</span><span class="punctuation">::</span><span class="function">from</span><span class="punctuation">(</span>
-                <span class="string">&quot;Try clicking vs tabbing! Click shows no border, Tab shows border.&quot;</span><span class="punctuation">,</span>
-            <span class="punctuation">),</span>
-        <span class="punctuation">}</span>
-    <span class="punctuation">}</span>
+        Self {
+            focus_handle,
+            items,
+            message: SharedString::from(
+                "Try clicking vs tabbing! Click shows no border, Tab shows border.",
+            ),
+        }
+    }
 
-    <span class="keyword">fn</span> <span class="function">on_tab</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="keyword">mut</span> <span class="variable">self</span><span class="punctuation">,</span> _<span class="punctuation">:</span> <span class="operator">&amp;</span><span class="type">Tab</span><span class="punctuation">,</span> <span class="variable">window</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Window</span><span class="punctuation">,</span> _<span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Context</span><span class="punctuation">&lt;</span><span class="type">Self</span><span class="punctuation">&gt;)</span> <span class="punctuation">{</span>
-        window<span class="punctuation">.</span><span class="property">focus_next</span><span class="punctuation">();</span>
-        <span class="variable">self</span><span class="punctuation">.</span><span class="property">message</span> = <span class="constructor">SharedString</span><span class="punctuation">::</span><span class="function">from</span><span class="punctuation">(</span><span class="string">&quot;Pressed Tab - focus-visible border should appear!&quot;</span><span class="punctuation">);</span>
-    <span class="punctuation">}</span>
+    fn on_tab(&mut self, _: &Tab, window: &mut Window, _: &mut Context<Self>) {
+        window.focus_next();
+        self.message = SharedString::from("Pressed Tab - focus-visible border should appear!");
+    }
 
-    <span class="keyword">fn</span> <span class="function">on_tab_prev</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="keyword">mut</span> <span class="variable">self</span><span class="punctuation">,</span> _<span class="punctuation">:</span> <span class="operator">&amp;</span><span class="type">TabPrev</span><span class="punctuation">,</span> <span class="variable">window</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Window</span><span class="punctuation">,</span> _<span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Context</span><span class="punctuation">&lt;</span><span class="type">Self</span><span class="punctuation">&gt;)</span> <span class="punctuation">{</span>
-        window<span class="punctuation">.</span><span class="property">focus_prev</span><span class="punctuation">();</span>
-        <span class="variable">self</span><span class="punctuation">.</span><span class="property">message</span> =
-            <span class="constructor">SharedString</span><span class="punctuation">::</span><span class="function">from</span><span class="punctuation">(</span><span class="string">&quot;Pressed Shift-Tab - focus-visible border should appear!&quot;</span><span class="punctuation">);</span>
-    <span class="punctuation">}</span>
+    fn on_tab_prev(&mut self, _: &TabPrev, window: &mut Window, _: &mut Context<Self>) {
+        window.focus_prev();
+        self.message =
+            SharedString::from("Pressed Shift-Tab - focus-visible border should appear!");
+    }
 
-    <span class="keyword">fn</span> <span class="function">on_quit</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="keyword">mut</span> <span class="variable">self</span><span class="punctuation">,</span> _<span class="punctuation">:</span> <span class="operator">&amp;</span><span class="type">Quit</span><span class="punctuation">,</span> <span class="variable">_window</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Window</span><span class="punctuation">,</span> <span class="variable">cx</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Context</span><span class="punctuation">&lt;</span><span class="type">Self</span><span class="punctuation">&gt;)</span> <span class="punctuation">{</span>
-        cx<span class="punctuation">.</span><span class="property">quit</span><span class="punctuation">();</span>
-    <span class="punctuation">}</span>
-<span class="punctuation">}</span>
+    fn on_quit(&mut self, _: &Quit, _window: &mut Window, cx: &mut Context<Self>) {
+        cx.quit();
+    }
+}
 
-<span class="keyword">impl</span> <span class="type">Render</span> <span class="keyword">for</span> <span class="type">Example</span> <span class="punctuation">{</span>
-    <span class="keyword">fn</span> <span class="function">render</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="keyword">mut</span> <span class="variable">self</span><span class="punctuation">,</span> <span class="variable">_window</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Window</span><span class="punctuation">,</span> <span class="variable">cx</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Context</span><span class="punctuation">&lt;</span><span class="type">Self</span><span class="punctuation">&gt;)</span> -&gt; <span class="keyword">impl</span> <span class="type">IntoElement</span> <span class="punctuation">{</span>
-        <span class="keyword">fn</span> <span class="function">button_base</span><span class="punctuation">(</span><span class="variable">id</span><span class="punctuation">:</span> <span class="keyword">impl</span> <span class="type">Into</span><span class="punctuation">&lt;</span><span class="type">ElementId</span><span class="punctuation">&gt;,</span> <span class="variable">label</span><span class="punctuation">:</span> <span class="operator">&amp;&#39;</span><span class="label">static</span> <span class="type">str</span><span class="punctuation">)</span> -&gt; <span class="type">Stateful</span><span class="punctuation">&lt;</span><span class="type">Div</span><span class="punctuation">&gt;</span> <span class="punctuation">{</span>
-            <span class="function">div</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(</span>id<span class="punctuation">)</span>
-                <span class="punctuation">.</span><span class="property">h_16</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">w_full</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">justify_center</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">items_center</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0x2563eb</span><span class="punctuation">))</span>
-                <span class="punctuation">.</span><span class="property">text_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">white</span><span class="punctuation">())</span>
-                <span class="punctuation">.</span><span class="property">rounded_md</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">cursor_pointer</span><span class="punctuation">()</span>
-                <span class="punctuation">.</span><span class="property">hover</span><span class="punctuation">(</span>|style| style<span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0x1d4ed8</span><span class="punctuation">)))</span>
-                <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>label<span class="punctuation">)</span>
-        <span class="punctuation">}</span>
+impl Render for Example {
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        fn button_base(id: impl Into<ElementId>, label: &'static str) -> Stateful<Div> {
+            div()
+                .id(id)
+                .h_16()
+                .w_full()
+                .flex()
+                .justify_center()
+                .items_center()
+                .bg(gpui::rgb(0x2563eb))
+                .text_color(gpui::white())
+                .rounded_md()
+                .cursor_pointer()
+                .hover(|style| style.bg(gpui::rgb(0x1d4ed8)))
+                .child(label)
+        }
 
-        <span class="function">div</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(</span><span class="string">&quot;app&quot;</span><span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">track_focus</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="variable">self</span><span class="punctuation">.</span><span class="property">focus_handle</span><span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">on_action</span><span class="punctuation">(</span>cx<span class="punctuation">.</span><span class="property">listener</span><span class="punctuation">(</span><span class="constructor">Self</span><span class="punctuation">::</span>on_tab<span class="punctuation">))</span>
-            <span class="punctuation">.</span><span class="property">on_action</span><span class="punctuation">(</span>cx<span class="punctuation">.</span><span class="property">listener</span><span class="punctuation">(</span><span class="constructor">Self</span><span class="punctuation">::</span>on_tab_prev<span class="punctuation">))</span>
-            <span class="punctuation">.</span><span class="property">on_action</span><span class="punctuation">(</span>cx<span class="punctuation">.</span><span class="property">listener</span><span class="punctuation">(</span><span class="constructor">Self</span><span class="punctuation">::</span>on_quit<span class="punctuation">))</span>
-            <span class="punctuation">.</span><span class="property">size_full</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">flex_col</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">p_8</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">gap_6</span><span class="punctuation">()</span>
-            <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0xf3f4f6</span><span class="punctuation">))</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                <span class="function">div</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">text_2xl</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">font_weight</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="constructor">FontWeight</span><span class="punctuation">::</span><span class="constructor">BOLD</span><span class="punctuation">)</span>
-                    <span class="punctuation">.</span><span class="property">text_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0x111827</span><span class="punctuation">))</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="string">&quot;CSS focus-visible Demo&quot;</span><span class="punctuation">),</span>
-            <span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                <span class="function">div</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">p_4</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">rounded_md</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0xdbeafe</span><span class="punctuation">))</span>
-                    <span class="punctuation">.</span><span class="property">text_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0x1e3a8a</span><span class="punctuation">))</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="variable">self</span><span class="punctuation">.</span><span class="property">message</span><span class="punctuation">.</span><span class="property">clone</span><span class="punctuation">()),</span>
-            <span class="punctuation">)</span>
-            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                <span class="function">div</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">flex_col</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">gap_4</span><span class="punctuation">()</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">flex_col</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">gap_2</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                                <span class="function">div</span><span class="punctuation">()</span>
-                                    <span class="punctuation">.</span><span class="property">text_sm</span><span class="punctuation">()</span>
-                                    <span class="punctuation">.</span><span class="property">font_weight</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="constructor">FontWeight</span><span class="punctuation">::</span><span class="constructor">BOLD</span><span class="punctuation">)</span>
-                                    <span class="punctuation">.</span><span class="property">text_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0x374151</span><span class="punctuation">))</span>
-                                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="string">&quot;1. Regular .focus() - always visible:&quot;</span><span class="punctuation">),</span>
-                            <span class="punctuation">)</span>
-                            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                                <span class="function">button_base</span><span class="punctuation">(</span><span class="string">&quot;button1&quot;</span><span class="punctuation">,</span> <span class="variable">self</span><span class="punctuation">.</span><span class="property">items</span><span class="punctuation">[</span><span class="constant">0</span><span class="punctuation">].</span><span class="constant">1</span><span class="punctuation">)</span>
-                                    <span class="punctuation">.</span><span class="property">track_focus</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="variable">self</span><span class="punctuation">.</span><span class="property">items</span><span class="punctuation">[</span><span class="constant">0</span><span class="punctuation">].</span><span class="constant">0</span><span class="punctuation">)</span>
-                                    <span class="punctuation">.</span><span class="property">focus</span><span class="punctuation">(</span>|style| <span class="punctuation">{</span>
-                                        style<span class="punctuation">.</span><span class="property">border_4</span><span class="punctuation">().</span><span class="property">border_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0xfbbf24</span><span class="punctuation">))</span>
-                                    <span class="punctuation">})</span>
-                                    <span class="punctuation">.</span><span class="property">on_click</span><span class="punctuation">(</span>cx<span class="punctuation">.</span><span class="property">listener</span><span class="punctuation">(</span>|this<span class="punctuation">,</span> _<span class="punctuation">,</span> _<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                                        this<span class="punctuation">.</span><span class="property">message</span> =
-                                            <span class="string">&quot;Clicked button 1 - focus border is visible!&quot;</span><span class="punctuation">.</span><span class="property">into</span><span class="punctuation">();</span>
-                                        cx<span class="punctuation">.</span><span class="property">notify</span><span class="punctuation">();</span>
-                                    <span class="punctuation">})),</span>
-                            <span class="punctuation">),</span>
-                    <span class="punctuation">)</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">flex_col</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">gap_2</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                                <span class="function">div</span><span class="punctuation">()</span>
-                                    <span class="punctuation">.</span><span class="property">text_sm</span><span class="punctuation">()</span>
-                                    <span class="punctuation">.</span><span class="property">font_weight</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="constructor">FontWeight</span><span class="punctuation">::</span><span class="constructor">BOLD</span><span class="punctuation">)</span>
-                                    <span class="punctuation">.</span><span class="property">text_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0x374151</span><span class="punctuation">))</span>
-                                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="string">&quot;2. New .focus_visible() - only keyboard:&quot;</span><span class="punctuation">),</span>
-                            <span class="punctuation">)</span>
-                            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                                <span class="function">button_base</span><span class="punctuation">(</span><span class="string">&quot;button2&quot;</span><span class="punctuation">,</span> <span class="variable">self</span><span class="punctuation">.</span><span class="property">items</span><span class="punctuation">[</span><span class="constant">1</span><span class="punctuation">].</span><span class="constant">1</span><span class="punctuation">)</span>
-                                    <span class="punctuation">.</span><span class="property">track_focus</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="variable">self</span><span class="punctuation">.</span><span class="property">items</span><span class="punctuation">[</span><span class="constant">1</span><span class="punctuation">].</span><span class="constant">0</span><span class="punctuation">)</span>
-                                    <span class="punctuation">.</span><span class="property">focus_visible</span><span class="punctuation">(</span>|style| <span class="punctuation">{</span>
-                                        style<span class="punctuation">.</span><span class="property">border_4</span><span class="punctuation">().</span><span class="property">border_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0x10b981</span><span class="punctuation">))</span>
-                                    <span class="punctuation">})</span>
-                                    <span class="punctuation">.</span><span class="property">on_click</span><span class="punctuation">(</span>cx<span class="punctuation">.</span><span class="property">listener</span><span class="punctuation">(</span>|this<span class="punctuation">,</span> _<span class="punctuation">,</span> _<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                                        this<span class="punctuation">.</span><span class="property">message</span> =
-                                            <span class="string">&quot;Clicked button 2 - no border! Try Tab instead.&quot;</span><span class="punctuation">.</span><span class="property">into</span><span class="punctuation">();</span>
-                                        cx<span class="punctuation">.</span><span class="property">notify</span><span class="punctuation">();</span>
-                                    <span class="punctuation">})),</span>
-                            <span class="punctuation">),</span>
-                    <span class="punctuation">)</span>
-                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                        <span class="function">div</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">flex_col</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">gap_2</span><span class="punctuation">()</span>
-                            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                                <span class="function">div</span><span class="punctuation">()</span>
-                                    <span class="punctuation">.</span><span class="property">text_sm</span><span class="punctuation">()</span>
-                                    <span class="punctuation">.</span><span class="property">font_weight</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="constructor">FontWeight</span><span class="punctuation">::</span><span class="constructor">BOLD</span><span class="punctuation">)</span>
-                                    <span class="punctuation">.</span><span class="property">text_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0x374151</span><span class="punctuation">))</span>
-                                    <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                                        <span class="string">&quot;3. Both .focus() (yellow) and .focus_visible() (green):&quot;</span><span class="punctuation">,</span>
-                                    <span class="punctuation">),</span>
-                            <span class="punctuation">)</span>
-                            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
-                                <span class="function">button_base</span><span class="punctuation">(</span><span class="string">&quot;button3&quot;</span><span class="punctuation">,</span> <span class="variable">self</span><span class="punctuation">.</span><span class="property">items</span><span class="punctuation">[</span><span class="constant">2</span><span class="punctuation">].</span><span class="constant">1</span><span class="punctuation">)</span>
-                                    <span class="punctuation">.</span><span class="property">track_focus</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="variable">self</span><span class="punctuation">.</span><span class="property">items</span><span class="punctuation">[</span><span class="constant">2</span><span class="punctuation">].</span><span class="constant">0</span><span class="punctuation">)</span>
-                                    <span class="punctuation">.</span><span class="property">focus</span><span class="punctuation">(</span>|style| <span class="punctuation">{</span>
-                                        style<span class="punctuation">.</span><span class="property">border_4</span><span class="punctuation">().</span><span class="property">border_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0xfbbf24</span><span class="punctuation">))</span>
-                                    <span class="punctuation">})</span>
-                                    <span class="punctuation">.</span><span class="property">focus_visible</span><span class="punctuation">(</span>|style| <span class="punctuation">{</span>
-                                        style<span class="punctuation">.</span><span class="property">border_4</span><span class="punctuation">().</span><span class="property">border_color</span><span class="punctuation">(</span>gpui<span class="punctuation">::</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0x10b981</span><span class="punctuation">))</span>
-                                    <span class="punctuation">})</span>
-                                    <span class="punctuation">.</span><span class="property">on_click</span><span class="punctuation">(</span>cx<span class="punctuation">.</span><span class="property">listener</span><span class="punctuation">(</span>|this<span class="punctuation">,</span> _<span class="punctuation">,</span> _<span class="punctuation">,</span> cx| <span class="punctuation">{</span>
-                                        this<span class="punctuation">.</span><span class="property">message</span> =
-                                            <span class="string">&quot;Clicked button 3 - yellow border. Tab shows green!&quot;</span>
-                                                <span class="punctuation">.</span><span class="property">into</span><span class="punctuation">();</span>
-                                        cx<span class="punctuation">.</span><span class="property">notify</span><span class="punctuation">();</span>
-                                    <span class="punctuation">})),</span>
-                            <span class="punctuation">),</span>
-                    <span class="punctuation">),</span>
-            <span class="punctuation">)</span>
-    <span class="punctuation">}</span>
-<span class="punctuation">}</span>
+        div()
+            .id("app")
+            .track_focus(&self.focus_handle)
+            .on_action(cx.listener(Self::on_tab))
+            .on_action(cx.listener(Self::on_tab_prev))
+            .on_action(cx.listener(Self::on_quit))
+            .size_full()
+            .flex()
+            .flex_col()
+            .p_8()
+            .gap_6()
+            .bg(gpui::rgb(0xf3f4f6))
+            .child(
+                div()
+                    .text_2xl()
+                    .font_weight(gpui::FontWeight::BOLD)
+                    .text_color(gpui::rgb(0x111827))
+                    .child("CSS focus-visible Demo"),
+            )
+            .child(
+                div()
+                    .p_4()
+                    .rounded_md()
+                    .bg(gpui::rgb(0xdbeafe))
+                    .text_color(gpui::rgb(0x1e3a8a))
+                    .child(self.message.clone()),
+            )
+            .child(
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap_4()
+                    .child(
+                        div()
+                            .flex()
+                            .flex_col()
+                            .gap_2()
+                            .child(
+                                div()
+                                    .text_sm()
+                                    .font_weight(gpui::FontWeight::BOLD)
+                                    .text_color(gpui::rgb(0x374151))
+                                    .child("1. Regular .focus() - always visible:"),
+                            )
+                            .child(
+                                button_base("button1", self.items[0].1)
+                                    .track_focus(&self.items[0].0)
+                                    .focus(|style| {
+                                        style.border_4().border_color(gpui::rgb(0xfbbf24))
+                                    })
+                                    .on_click(cx.listener(|this, _, _, cx| {
+                                        this.message =
+                                            "Clicked button 1 - focus border is visible!".into();
+                                        cx.notify();
+                                    })),
+                            ),
+                    )
+                    .child(
+                        div()
+                            .flex()
+                            .flex_col()
+                            .gap_2()
+                            .child(
+                                div()
+                                    .text_sm()
+                                    .font_weight(gpui::FontWeight::BOLD)
+                                    .text_color(gpui::rgb(0x374151))
+                                    .child("2. New .focus_visible() - only keyboard:"),
+                            )
+                            .child(
+                                button_base("button2", self.items[1].1)
+                                    .track_focus(&self.items[1].0)
+                                    .focus_visible(|style| {
+                                        style.border_4().border_color(gpui::rgb(0x10b981))
+                                    })
+                                    .on_click(cx.listener(|this, _, _, cx| {
+                                        this.message =
+                                            "Clicked button 2 - no border! Try Tab instead.".into();
+                                        cx.notify();
+                                    })),
+                            ),
+                    )
+                    .child(
+                        div()
+                            .flex()
+                            .flex_col()
+                            .gap_2()
+                            .child(
+                                div()
+                                    .text_sm()
+                                    .font_weight(gpui::FontWeight::BOLD)
+                                    .text_color(gpui::rgb(0x374151))
+                                    .child(
+                                        "3. Both .focus() (yellow) and .focus_visible() (green):",
+                                    ),
+                            )
+                            .child(
+                                button_base("button3", self.items[2].1)
+                                    .track_focus(&self.items[2].0)
+                                    .focus(|style| {
+                                        style.border_4().border_color(gpui::rgb(0xfbbf24))
+                                    })
+                                    .focus_visible(|style| {
+                                        style.border_4().border_color(gpui::rgb(0x10b981))
+                                    })
+                                    .on_click(cx.listener(|this, _, _, cx| {
+                                        this.message =
+                                            "Clicked button 3 - yellow border. Tab shows green!"
+                                                .into();
+                                        cx.notify();
+                                    })),
+                            ),
+                    ),
+            )
+    }
+}
 
-<span class="keyword">fn</span> <span class="function">main</span><span class="punctuation">()</span> <span class="punctuation">{</span>
-    <span class="constructor">Application</span><span class="punctuation">::</span><span class="function">new</span><span class="punctuation">().</span><span class="property">run</span><span class="punctuation">(</span>|<span class="variable">cx</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">App</span>| <span class="punctuation">{</span>
-        cx<span class="punctuation">.</span><span class="property">bind_keys</span><span class="punctuation">([</span>
-            <span class="constructor">KeyBinding</span><span class="punctuation">::</span><span class="function">new</span><span class="punctuation">(</span><span class="string">&quot;tab&quot;</span><span class="punctuation">,</span> <span class="constructor">Tab</span><span class="punctuation">,</span> <span class="constructor">None</span><span class="punctuation">),</span>
-            <span class="constructor">KeyBinding</span><span class="punctuation">::</span><span class="function">new</span><span class="punctuation">(</span><span class="string">&quot;shift-tab&quot;</span><span class="punctuation">,</span> <span class="constructor">TabPrev</span><span class="punctuation">,</span> <span class="constructor">None</span><span class="punctuation">),</span>
-            <span class="constructor">KeyBinding</span><span class="punctuation">::</span><span class="function">new</span><span class="punctuation">(</span><span class="string">&quot;cmd-q&quot;</span><span class="punctuation">,</span> <span class="constructor">Quit</span><span class="punctuation">,</span> <span class="constructor">None</span><span class="punctuation">),</span>
-        <span class="punctuation">]);</span>
+fn main() {
+    Application::new().run(|cx: &mut App| {
+        cx.bind_keys([
+            KeyBinding::new("tab", Tab, None),
+            KeyBinding::new("shift-tab", TabPrev, None),
+            KeyBinding::new("cmd-q", Quit, None),
+        ]);
 
-        <span class="keyword">let</span> bounds = <span class="constructor">Bounds</span><span class="punctuation">::</span><span class="function">centered</span><span class="punctuation">(</span><span class="constructor">None</span><span class="punctuation">,</span> <span class="function">size</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">800.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">600.0</span><span class="punctuation">)),</span> cx<span class="punctuation">);</span>
-        cx<span class="punctuation">.</span><span class="property">open_window</span><span class="punctuation">(</span>
-            <span class="type">WindowOptions</span> <span class="punctuation">{</span>
-                <span class="property">window_bounds</span><span class="punctuation">:</span> <span class="constructor">Some</span><span class="punctuation">(</span><span class="constructor">WindowBounds</span><span class="punctuation">::</span><span class="constructor">Windowed</span><span class="punctuation">(</span>bounds<span class="punctuation">)),</span>
-                ..<span class="constructor">Default</span><span class="punctuation">::</span><span class="function">default</span><span class="punctuation">()</span>
-            <span class="punctuation">},</span>
-            |window<span class="punctuation">,</span> cx| cx<span class="punctuation">.</span><span class="property">new</span><span class="punctuation">(</span>|cx| <span class="constructor">Example</span><span class="punctuation">::</span><span class="function">new</span><span class="punctuation">(</span>window<span class="punctuation">,</span> cx<span class="punctuation">)),</span>
-        <span class="punctuation">)</span>
-        <span class="punctuation">.</span><span class="property">unwrap</span><span class="punctuation">();</span>
+        let bounds = Bounds::centered(None, size(px(800.), px(600.0)), cx);
+        cx.open_window(
+            WindowOptions {
+                window_bounds: Some(WindowBounds::Windowed(bounds)),
+                ..Default::default()
+            },
+            |window, cx| cx.new(|cx| Example::new(window, cx)),
+        )
+        .unwrap();
 
-        cx<span class="punctuation">.</span><span class="property">activate</span><span class="punctuation">(</span><span class="constant">true</span><span class="punctuation">);</span>
-    <span class="punctuation">});</span>
-<span class="punctuation">}</span></code></pre>
+        cx.activate(true);
+    });
+}
+```

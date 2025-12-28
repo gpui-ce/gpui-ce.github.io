@@ -2,14 +2,15 @@
 
 # Generate example content pages for the Zola site from GPUI source files
 # Expects gpui-ce repo to be a sibling directory: ../gpui-ce/
-# Run from the repo root: ./generate_examples.sh
+# Run from the repo root: ./script/examples
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-GPUI_CE_DIR="$SCRIPT_DIR/../gpui-ce"
-EXAMPLES_DIR="$GPUI_CE_DIR/crates/gpui/examples"
-OUTPUT_DIR="$SCRIPT_DIR/content/examples"
+REPO_DIR="$SCRIPT_DIR/.."
+GPUI_CE_DIR="$REPO_DIR/../gpui-ce"
+EXAMPLES_DIR="$GPUI_CE_DIR/examples"
+OUTPUT_DIR="$REPO_DIR/content/examples"
 
 # Check that gpui-ce exists as sibling
 if [ ! -d "$EXAMPLES_DIR" ]; then
@@ -45,7 +46,7 @@ for example_file in "$EXAMPLES_DIR"/*.rs; do
         title=$(to_title "$filename")
         description=$(extract_description "$example_file")
         output_file="$OUTPUT_DIR/$filename.md"
-        source_path="crates/gpui/examples/$filename.rs"
+        source_path="examples/$filename.rs"
 
         # Read the source code
         source_code=$(cat "$example_file")
@@ -59,7 +60,7 @@ description = "$description"
 template = "page.html"
 
 [extra]
-run_command = "cargo run -p gpui --example $filename"
+run_command = "cargo run --example $filename"
 source_file = "$source_path"
 +++
 

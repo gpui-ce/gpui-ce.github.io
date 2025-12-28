@@ -40,7 +40,7 @@ jobs:
           tool: zola@0.21.0
 
       - name: Generate example pages
-        run: ./generate_examples.sh
+        run: ./script/examples
         working-directory: gpui-ce.github.io
 
       - name: Build site

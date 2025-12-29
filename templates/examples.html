@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}{{ section.title }} — {{ config.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="header">
+        <h1>{{ section.title }}</h1>
+        <p>{{ section.description }}</p>
+    </header>
+
+    {% if section.extra.learn_examples %}
+    <section class="example-section" id="learn">
+        <h2>Learn</h2>
+        <p class="section-description">Educational examples to help you learn GPUI fundamentals.</p>
+        <ul class="example-list">
+            {% for example in section.extra.learn_examples %}
+            <li>
+                <a href="{{ get_url(path="examples/" ~ example.name ~ "/") }}">{{ example.title }}</a>
+                {% if example.description %}
+                <p class="example-description">{{ example.description }}</p>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    {% if section.extra.bench_examples %}
+    <section class="example-section" id="benchmarks">
+        <h2>Benchmarks</h2>
+        <p class="section-description">Performance benchmarks and stress tests.</p>
+        <ul class="example-list">
+            {% for example in section.extra.bench_examples %}
+            <li>
+                <a href="{{ get_url(path="examples/" ~ example.name ~ "/") }}">{{ example.title }}</a>
+                {% if example.description %}
+                <p class="example-description">{{ example.description }}</p>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    {% if section.extra.legacy_examples %}
+    <section class="example-section" id="more-examples">
+        <h2>More Examples</h2>
+        <p class="section-description">Additional examples covering specific features.</p>
+        <ul class="example-list">
+            {% for example in section.extra.legacy_examples %}
+            <li>
+                <a href="{{ get_url(path="examples/" ~ example.name ~ "/") }}">{{ example.title }}</a>
+                {% if example.description %}
+                <p class="example-description">{{ example.description }}</p>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    <p class="run-hint">Run any example with: <code>cargo run --example [name]</code></p>
+</div>
+{% endblock %}

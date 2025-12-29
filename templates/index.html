@@ -1,60 +1,120 @@
-{% extends "base.html" %} {% block content %}
-<div class="container">
-    <header class="header">
-        <h1>GPUI Community Edition</h1>
-        <p>
-            A community fork of <a href="https://www.gpui.rs/">gpui</a>, the
-            fast, productive rust ui framework.
-        </p>
-    </header>
+{% extends "base.html" %}
 
-    <section class="section">
-        <h2>Try it:</h2>
-        <pre>gpui = { package = "gpui-ce", version = "*" }</pre>
-    </section>
+{% block content %}
+{% set examples_section = get_section(path="examples/_index.md") %}
+<div class="home-layout">
+    <div class="main-content">
+        <header class="header">
+            <h1>GPUI Community Edition</h1>
+            <p>
+                A community fork of <a href="https://www.gpui.rs/">gpui</a>, the
+                fast, productive rust ui framework.
+            </p>
+        </header>
 
-    <section class="section">
-        <h2>The plan...</h2>
-        <p>
-            gpui-ce exists as a way for gpui contributors to explore what it
-            would mean to take it further, without the constraints of
-            supporting, or not breaking Zed.
-        </p>
-        <p>
-            We're still figuring out what that means exactly–over the next few
-            weeks we'll start making plans to share with the community.
-        </p>
-        <p>
-            Regardless, we are excited to start supporting the gpui community
-            better, through better examples, showcases & more.
-        </p>
-    </section>
+        <section class="section">
+            <h2>Try it:</h2>
+            <pre>gpui = { package = "gpui-ce", version = "*" }</pre>
+        </section>
 
-    <section class="section">
-        <h2>Acknowledgements</h2>
-        <p>
-            <a href="https://www.gpui.rs/">gpui</a> was originally created by
-            Nathan Sobo & the <a href="https://zed.dev/">Zed Industries</a> team
-        </p>
-    </section>
+        <section class="section">
+            <h2>The plan...</h2>
+            <p>
+                gpui-ce exists as a way for gpui contributors to explore what it
+                would mean to take it further, without the constraints of
+                supporting, or not breaking Zed.
+            </p>
+            <p>
+                We're still figuring out what that means exactly–over the next few
+                weeks we'll start making plans to share with the community.
+            </p>
+            <p>
+                Regardless, we are excited to start supporting the gpui community
+                better, through better examples, showcases & more.
+            </p>
+        </section>
 
-    <section class="section">
-        <h2>Links</h2>
-        <ul>
-            <li><a href="{{ config.extra.github_repo }}">GitHub</a></li>
-            <li>
-                <a
-                    href="{{ config.extra.github_repo }}/blob/main/crates/gpui/README.md"
-                    >Documentation</a
-                >
-            </li>
-            <li>
-                <a
-                    href="{{ config.extra.github_repo }}/blob/main/LICENSE-APACHE"
-                    >License (Apache 2.0)</a
-                >
-            </li>
-        </ul>
-    </section>
+        <section class="section">
+            <h2>Acknowledgements</h2>
+            <p>
+                <a href="https://www.gpui.rs/">gpui</a> was originally created by
+                Nathan Sobo & the <a href="https://zed.dev/">Zed Industries</a> team
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>Links</h2>
+            <ul>
+                <li><a href="{{ config.extra.github_repo }}">GitHub</a></li>
+                <li>
+                    <a
+                        href="{{ config.extra.github_repo }}/blob/main/crates/gpui/README.md"
+                        >Documentation</a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="{{ config.extra.github_repo }}/blob/main/LICENSE-APACHE"
+                        >License (Apache 2.0)</a
+                    >
+                </li>
+            </ul>
+        </section>
+    </div>
+
+    <aside class="examples-sidebar">
+        <div class="examples-header">
+            <h2>Examples</h2>
+            <p>Run with: <code>cargo run --example [name]</code></p>
+        </div>
+
+        {% if examples_section.extra.learn_examples %}
+        <section class="example-category">
+            <h3>Learn</h3>
+            <ul class="example-list-compact">
+                {% for example in examples_section.extra.learn_examples %}
+                <li>
+                    <a href="{{ get_url(path="examples/" ~ example.name ~ "/") }}">{{ example.title }}</a>
+                    {% if example.description %}
+                    <p class="example-description">{{ example.description }}</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
+        {% if examples_section.extra.bench_examples %}
+        <section class="example-category">
+            <h3>Benchmarks</h3>
+            <ul class="example-list-compact">
+                {% for example in examples_section.extra.bench_examples %}
+                <li>
+                    <a href="{{ get_url(path="examples/" ~ example.name ~ "/") }}">{{ example.title }}</a>
+                    {% if example.description %}
+                    <p class="example-description">{{ example.description }}</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
+        {% if examples_section.extra.legacy_examples %}
+        <section class="example-category">
+            <h3>More Examples</h3>
+            <ul class="example-list-compact">
+                {% for example in examples_section.extra.legacy_examples %}
+                <li>
+                    <a href="{{ get_url(path="examples/" ~ example.name ~ "/") }}">{{ example.title }}</a>
+                    {% if example.description %}
+                    <p class="example-description">{{ example.description }}</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+    </aside>
 </div>
 {% endblock %}

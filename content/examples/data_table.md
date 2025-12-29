@@ -1,11 +1,12 @@
 +++
 title = "Data Table"
-description = ""
+description = "Performance benchmark rendering a large data table with many rows and columns."
 template = "page.html"
 
 [extra]
 run_command = "cargo run --example data_table"
-source_file = "examples/data_table.rs"
+source_file = "examples/bench/data_table.rs"
+category = "bench"
 +++
 
 ## Source Code
@@ -484,4 +485,5 @@ fn main() {
         cx.activate(true);
     });
 }
+
 ```

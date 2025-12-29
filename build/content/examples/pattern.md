@@ -1,11 +1,12 @@
 +++
 title = "Pattern"
-description = ""
+description = "Demonstrates pattern fills and gradients for background styling."
 template = "page.html"
 
 [extra]
-run_command = "cargo run -p gpui --example pattern"
-source_file = "crates/gpui/examples/pattern.rs"
+run_command = "cargo run --example pattern"
+source_file = "examples/bench/pattern.rs"
+category = "bench"
 +++
 
 ## Source Code

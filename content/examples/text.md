@@ -1,347 +1,598 @@
 +++
-title = "Text"
-description = ""
+title = "Text & Typography"
+description = "Covers text styling, alignment, decoration, overflow handling, styled text with inline highlights, and unicode/emoji support."
 template = "page.html"
 
 [extra]
 run_command = "cargo run --example text"
-source_file = "examples/text.rs"
+source_file = "examples/learn/text.rs"
+category = "learn"
 +++
 
 ## Source Code
 
 ```rust
-use std::{
-    ops::{Deref, DerefMut},
-    sync::Arc,
-};
+//! Text Example
+//!
+//! This example demonstrates text capabilities in GPUI:
+//!
+//! 1. Text Styling - Font sizes, weights, and colors
+//! 2. Text Alignment - Left, center, right alignment
+//! 3. Text Decoration - Underline, strikethrough
+//! 4. Text Overflow - Ellipsis, truncation, line clamping
+//! 5. Styled Text - Inline style variations with highlights
+//! 6. Character Grid - Unicode and emoji support
 
+#[path = "../prelude.rs"]
+mod example_prelude;
+
+use example_prelude::init_example;
 use gpui::{
-    AbsoluteLength, App, Application, Context, DefiniteLength, ElementId, Global, Hsla, Menu,
-    SharedString, TextStyle, TitlebarOptions, Window, WindowBounds, WindowOptions, bounds,
-    colors::DefaultColors, div, point, prelude::*, px, relative, rgb, size,
+    App, Application, Bounds, Colors, Context, FontStyle, FontWeight, Hsla, Render, StyledText,
+    TextOverflow, Window, WindowBounds, WindowOptions, div, prelude::*, px, relative, size,
 };
-use std::iter;
 
-#[derive(Clone, Debug)]
-pub struct TextContext {
-    font_size: f32,
-    line_height: f32,
-    type_scale: f32,
-}
+// Text Styling Examples
 
-impl Default for TextContext {
-    fn default() -> Self {
-        TextContext {
-            font_size: 16.0,
-            line_height: 1.3,
-            type_scale: 1.33,
-        }
-    }
-}
+fn text_sizes_example(colors: &Colors) -> impl IntoElement {
+    let text = colors.text;
+    let text_muted = colors.text_muted;
 
-impl TextContext {
-    pub fn get_global(cx: &App) -> &Arc<TextContext> {
-        &cx.global::<GlobalTextContext>().0
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct GlobalTextContext(pub Arc<TextContext>);
-
-impl Deref for GlobalTextContext {
-    type Target = Arc<TextContext>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for GlobalTextContext {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl Global for GlobalTextContext {}
-
-pub trait ActiveTextContext {
-    fn text_context(&self) -> &Arc<TextContext>;
-}
-
-impl ActiveTextContext for App {
-    fn text_context(&self) -> &Arc<TextContext> {
-        &self.global::<GlobalTextContext>().0
-    }
-}
-
-#[derive(Clone, PartialEq)]
-pub struct SpecimenTheme {
-    pub bg: Hsla,
-    pub fg: Hsla,
-}
-
-impl Default for SpecimenTheme {
-    fn default() -> Self {
-        Self {
-            bg: gpui::white(),
-            fg: gpui::black(),
-        }
-    }
-}
-
-impl SpecimenTheme {
-    pub fn invert(&self) -> Self {
-        Self {
-            bg: self.fg,
-            fg: self.bg,
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, IntoElement)]
-struct Specimen {
-    id: ElementId,
-    scale: f32,
-    text_style: Option<TextStyle>,
-    string: SharedString,
-    invert: bool,
-}
-
-impl Specimen {
-    pub fn new(id: usize) -> Self {
-        let string = SharedString::new_static("The quick brown fox jumps over the lazy dog");
-        let id_string = format!("specimen-{}", id);
-        let id = ElementId::Name(id_string.into());
-        Self {
-            id,
-            scale: 1.0,
-            text_style: None,
-            string,
-            invert: false,
-        }
-    }
-
-    pub fn invert(mut self) -> Self {
-        self.invert = !self.invert;
-        self
-    }
-
-    pub fn scale(mut self, scale: f32) -> Self {
-        self.scale = scale;
-        self
-    }
-}
-
-impl RenderOnce for Specimen {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
-        let rem_size = window.rem_size();
-        let scale = self.scale;
-        let global_style = cx.text_context();
-
-        let style_override = self.text_style;
-
-        let mut font_size = global_style.font_size;
-        let mut line_height = global_style.line_height;
-
-        if let Some(style_override) = style_override {
-            font_size = style_override.font_size.to_pixels(rem_size).into();
-            line_height = match style_override.line_height {
-                DefiniteLength::Absolute(absolute_len) => match absolute_len {
-                    AbsoluteLength::Rems(absolute_len) => absolute_len.to_pixels(rem_size).into(),
-                    AbsoluteLength::Pixels(absolute_len) => absolute_len.into(),
-                },
-                DefiniteLength::Fraction(value) => value,
-            };
-        }
-
-        let mut theme = SpecimenTheme::default();
-
-        if self.invert {
-            theme = theme.invert();
-        }
-
-        div()
-            .id(self.id)
-            .bg(theme.bg)
-            .text_color(theme.fg)
-            .text_size(px(font_size * scale))
-            .line_height(relative(line_height))
-            .p(px(10.0))
-            .child(self.string)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, IntoElement)]
-struct CharacterGrid {
-    scale: f32,
-    invert: bool,
-    text_style: Option<TextStyle>,
-}
-
-impl CharacterGrid {
-    pub fn new() -> Self {
-        Self {
-            scale: 1.0,
-            invert: false,
-            text_style: None,
-        }
-    }
-
-    pub fn scale(mut self, scale: f32) -> Self {
-        self.scale = scale;
-        self
-    }
-}
-
-impl RenderOnce for CharacterGrid {
-    fn render(self, _window: &mut Window, _cx: &mut App) -> impl IntoElement {
-        let mut theme = SpecimenTheme::default();
-
-        if self.invert {
-            theme = theme.invert();
-        }
-
-        let characters = vec![
-            "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "A", "B", "C", "D", "E", "F", "G",
-            "H", "I", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y",
-            "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "p", "q",
-            "r", "s", "t", "u", "v", "w", "x", "y", "z", "ẞ", "ſ", "ß", "ð", "Þ", "þ", "α", "β",
-            "Γ", "γ", "Δ", "δ", "η", "θ", "ι", "κ", "Λ", "λ", "μ", "ν", "ξ", "π", "τ", "υ", "φ",
-            "χ", "ψ", "∂", "а", "в", "Ж", "ж", "З", "з", "К", "к", "л", "м", "Н", "н", "Р", "р",
-            "У", "у", "ф", "ч", "ь", "ы", "Э", "э", "Я", "я", "ij", "öẋ", ".,", "⣝⣑", "~", "*",
-            "_", "^", "`", "'", "(", "{", "«", "#", "&", "@", "$", "¢", "%", "|", "?", "¶", "µ",
-            "❮", "<=", "!=", "==", "--", "++", "=>", "->", "🏀", "🎊", "😍", "❤️", "👍", "👎",
-        ];
-
-        let columns = 11;
-        let rows = characters.len().div_ceil(columns);
-
-        let grid_rows = (0..rows).map(|row_idx| {
-            let start_idx = row_idx * columns;
-            let end_idx = (start_idx + columns).min(characters.len());
-
+    div()
+        .flex()
+        .flex_col()
+        .gap_1()
+        .child(
             div()
-                .w_full()
+                .text_xs()
+                .text_color(text_muted)
+                .child("Font sizes: text_xs, text_sm, text_base, text_lg, text_xl"),
+        )
+        .child(
+            div()
                 .flex()
-                .flex_row()
-                .children((start_idx..end_idx).map(|i| {
+                .flex_wrap()
+                .items_baseline()
+                .gap_3()
+                .child(div().text_xs().text_color(text).child("Extra Small"))
+                .child(div().text_sm().text_color(text).child("Small"))
+                .child(div().text_base().text_color(text).child("Base"))
+                .child(div().text_lg().text_color(text).child("Large"))
+                .child(div().text_xl().text_color(text).child("Extra Large")),
+        )
+}
+
+fn text_weights_example(colors: &Colors) -> impl IntoElement {
+    let text = colors.text;
+    let text_muted = colors.text_muted;
+
+    div()
+        .flex()
+        .flex_col()
+        .gap_1()
+        .child(
+            div()
+                .text_xs()
+                .text_color(text_muted)
+                .child("Font weights: THIN through BLACK"),
+        )
+        .child(
+            div()
+                .flex()
+                .flex_wrap()
+                .gap_3()
+                .child(
                     div()
+                        .text_color(text)
+                        .font_weight(FontWeight::THIN)
+                        .child("Thin"),
+                )
+                .child(
+                    div()
+                        .text_color(text)
+                        .font_weight(FontWeight::LIGHT)
+                        .child("Light"),
+                )
+                .child(
+                    div()
+                        .text_color(text)
+                        .font_weight(FontWeight::NORMAL)
+                        .child("Normal"),
+                )
+                .child(
+                    div()
+                        .text_color(text)
+                        .font_weight(FontWeight::MEDIUM)
+                        .child("Medium"),
+                )
+                .child(
+                    div()
+                        .text_color(text)
+                        .font_weight(FontWeight::SEMIBOLD)
+                        .child("Semibold"),
+                )
+                .child(
+                    div()
+                        .text_color(text)
+                        .font_weight(FontWeight::BOLD)
+                        .child("Bold"),
+                )
+                .child(
+                    div()
+                        .text_color(text)
+                        .font_weight(FontWeight::BLACK)
+                        .child("Black"),
+                ),
+        )
+}
+
+// Text Alignment Examples
+
+fn text_alignment_example(colors: &Colors) -> impl IntoElement {
+    let text = colors.text;
+    let text_muted = colors.text_muted;
+    let surface = colors.surface;
+
+    div()
+        .flex()
+        .flex_col()
+        .gap_2()
+        .child(
+            div()
+                .text_xs()
+                .text_color(text_muted)
+                .child("Alignment: default (left), text_center, text_right"),
+        )
+        .child(
+            div()
+                .flex()
+                .flex_col()
+                .gap_1()
+                .child(
+                    div()
+                        .p_2()
+                        .bg(surface)
+                        .rounded_sm()
+                        .text_color(text)
+                        .child("Left aligned (default)"),
+                )
+                .child(
+                    div()
+                        .p_2()
+                        .bg(surface)
+                        .rounded_sm()
                         .text_center()
-                        .size(px(62.))
-                        .bg(theme.bg)
-                        .text_color(theme.fg)
-                        .text_size(px(24.0))
+                        .text_color(text)
+                        .child("Center aligned"),
+                )
+                .child(
+                    div()
+                        .p_2()
+                        .bg(surface)
+                        .rounded_sm()
+                        .text_right()
+                        .text_color(text)
+                        .child("Right aligned"),
+                ),
+        )
+}
+
+// Text Decoration Examples
+
+fn text_decoration_example(colors: &Colors) -> impl IntoElement {
+    let text = colors.text;
+    let text_muted = colors.text_muted;
+    let accent = colors.accent;
+    let error = colors.error;
+
+    div()
+        .flex()
+        .flex_col()
+        .gap_2()
+        .child(
+            div()
+                .text_xs()
+                .text_color(text_muted)
+                .child("Decorations: underline, strikethrough, italic"),
+        )
+        .child(
+            div()
+                .flex()
+                .flex_wrap()
+                .gap_4()
+                .child(
+                    div()
+                        .text_color(text)
+                        .text_decoration_1()
+                        .text_decoration_color(accent)
+                        .child("Underlined text"),
+                )
+                .child(
+                    div()
+                        .text_color(text)
+                        .line_through()
+                        .text_decoration_color(error)
+                        .child("Strikethrough text"),
+                )
+                .child(div().text_color(text).italic().child("Italic text")),
+        )
+}
+
+// Text Overflow Examples
+
+fn text_overflow_example(colors: &Colors) -> impl IntoElement {
+    let text = colors.text;
+    let text_muted = colors.text_muted;
+    let surface = colors.surface;
+    let border = colors.border;
+
+    let long_text = "The quick brown fox jumps over the lazy dog. This is a long sentence that will overflow its container.";
+
+    div()
+        .flex()
+        .flex_col()
+        .gap_2()
+        .child(
+            div()
+                .text_xs()
+                .text_color(text_muted)
+                .child("Overflow handling: ellipsis, truncate, line_clamp"),
+        )
+        .child(
+            div()
+                .flex()
+                .flex_col()
+                .gap_2()
+                .child(
+                    div()
+                        .flex()
+                        .flex_col()
+                        .gap_1()
+                        .child(
+                            div()
+                                .text_xs()
+                                .text_color(text_muted)
+                                .child("text_ellipsis (single line):"),
+                        )
+                        .child(
+                            div()
+                                .p_2()
+                                .bg(surface)
+                                .border_1()
+                                .border_color(border)
+                                .rounded_sm()
+                                .text_color(text)
+                                .overflow_hidden()
+                                .text_ellipsis()
+                                .child(long_text),
+                        ),
+                )
+                .child(
+                    div()
+                        .flex()
+                        .flex_col()
+                        .gap_1()
+                        .child(
+                            div()
+                                .text_xs()
+                                .text_color(text_muted)
+                                .child("line_clamp(2):"),
+                        )
+                        .child(
+                            div()
+                                .p_2()
+                                .bg(surface)
+                                .border_1()
+                                .border_color(border)
+                                .rounded_sm()
+                                .text_color(text)
+                                .overflow_hidden()
+                                .text_ellipsis()
+                                .line_clamp(2)
+                                .child(long_text),
+                        ),
+                )
+                .child(
+                    div()
+                        .flex()
+                        .flex_col()
+                        .gap_1()
+                        .child(
+                            div()
+                                .text_xs()
+                                .text_color(text_muted)
+                                .child("truncate (hard cut):"),
+                        )
+                        .child(
+                            div()
+                                .p_2()
+                                .bg(surface)
+                                .border_1()
+                                .border_color(border)
+                                .rounded_sm()
+                                .text_color(text)
+                                .overflow_hidden()
+                                .text_overflow(TextOverflow::Truncate("".into()))
+                                .child(long_text),
+                        ),
+                )
+                .child(
+                    div()
+                        .flex()
+                        .flex_col()
+                        .gap_1()
+                        .child(
+                            div()
+                                .text_xs()
+                                .text_color(text_muted)
+                                .child("whitespace_nowrap:"),
+                        )
+                        .child(
+                            div()
+                                .p_2()
+                                .bg(surface)
+                                .border_1()
+                                .border_color(border)
+                                .rounded_sm()
+                                .text_color(text)
+                                .overflow_hidden()
+                                .whitespace_nowrap()
+                                .child(long_text),
+                        ),
+                ),
+        )
+}
+
+// Styled Text Examples
+
+fn styled_text_example(colors: &Colors) -> impl IntoElement {
+    let text = colors.text;
+    let text_muted = colors.text_muted;
+
+    div()
+        .flex()
+        .flex_col()
+        .gap_2()
+        .child(
+            div()
+                .text_xs()
+                .text_color(text_muted)
+                .child("StyledText with inline highlights"),
+        )
+        .child(div().text_lg().text_color(text).child(
+            StyledText::new("Bold Italic Normal Semibold").with_highlights([
+                (0..4, FontWeight::BOLD.into()),
+                (5..11, FontStyle::Italic.into()),
+                (19..27, FontWeight::SEMIBOLD.into()),
+            ]),
+        ))
+}
+
+// Character Grid Example
+
+fn character_grid_example(colors: &Colors) -> impl IntoElement {
+    let text = colors.text;
+    let text_muted = colors.text_muted;
+    let surface = colors.surface;
+    let border = colors.border;
+
+    let characters = [
+        // Latin
+        "A", "B", "C", "D", "E", "a", "b", "c", "d", "e", // Numbers
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", // Greek
+        "α", "β", "γ", "δ", "ε", "θ", "λ", "π", "σ", "ω", // Cyrillic
+        "Д", "Ж", "И", "Л", "Ф", "Ц", "Ш", "Щ", "Ы", "Я", // CJK
+        "你", "好", "世", "界", "日", "本", "語", "中", "文", "字", // Symbols
+        "→", "←", "↑", "↓", "•", "★", "♠", "♥", "♦", "♣", // Emoji
+        "😀", "🎉", "🚀", "💡", "🔥", "✨", "🎨", "📚", "🎵", "❤️",
+    ];
+
+    div()
+        .flex()
+        .flex_col()
+        .gap_2()
+        .child(
+            div()
+                .text_xs()
+                .text_color(text_muted)
+                .child("Unicode and emoji support"),
+        )
+        .child(
+            div()
+                .p_2()
+                .bg(surface)
+                .border_1()
+                .border_color(border)
+                .rounded_md()
+                .child(
+                    div()
+                        .grid()
+                        .grid_cols(10)
+                        .gap_1()
+                        .children(characters.iter().map(|c| {
+                            div()
+                                .flex()
+                                .items_center()
+                                .justify_center()
+                                .size_8()
+                                .text_lg()
+                                .text_color(text)
+                                .line_height(relative(1.0))
+                                .child(*c)
+                        })),
+                ),
+        )
+}
+
+// Line Height Example
+
+fn line_height_example(colors: &Colors) -> impl IntoElement {
+    let text = colors.text;
+    let text_muted = colors.text_muted;
+    let surface = colors.surface;
+
+    div()
+        .flex()
+        .flex_col()
+        .gap_2()
+        .child(
+            div()
+                .text_xs()
+                .text_color(text_muted)
+                .child("Line height: relative(1.0), relative(1.5), relative(2.0)"),
+        )
+        .child(
+            div()
+                .flex()
+                .gap_3()
+                .child(
+                    div()
+                        .flex_1()
+                        .p_2()
+                        .bg(surface)
+                        .rounded_sm()
+                        .text_color(text)
+                        .text_sm()
                         .line_height(relative(1.0))
-                        .child(characters[i])
-                }))
-                .when(end_idx - start_idx < columns, |d| {
-                    d.children(
-                        iter::repeat_with(|| div().flex_1()).take(columns - (end_idx - start_idx)),
-                    )
-                })
-        });
-
-        div().p_4().gap_2().flex().flex_col().children(grid_rows)
-    }
+                        .child("Tight\nline\nheight"),
+                )
+                .child(
+                    div()
+                        .flex_1()
+                        .p_2()
+                        .bg(surface)
+                        .rounded_sm()
+                        .text_color(text)
+                        .text_sm()
+                        .line_height(relative(1.5))
+                        .child("Normal\nline\nheight"),
+                )
+                .child(
+                    div()
+                        .flex_1()
+                        .p_2()
+                        .bg(surface)
+                        .rounded_sm()
+                        .text_color(text)
+                        .text_sm()
+                        .line_height(relative(2.0))
+                        .child("Loose\nline\nheight"),
+                ),
+        )
 }
 
-struct TextExample {
-    next_id: usize,
-}
+// Main Application View
 
-impl TextExample {
-    fn next_id(&mut self) -> usize {
-        self.next_id += 1;
-        self.next_id
-    }
-}
+struct TextExample;
 
 impl Render for TextExample {
-    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let tcx = cx.text_context();
-        let colors = cx.default_colors().clone();
-
-        let type_scale = tcx.type_scale;
-
-        let step_down_2 = 1.0 / (type_scale * type_scale);
-        let step_down_1 = 1.0 / type_scale;
-        let base = 1.0;
-        let step_up_1 = base * type_scale;
-        let step_up_2 = step_up_1 * type_scale;
-        let step_up_3 = step_up_2 * type_scale;
-        let step_up_4 = step_up_3 * type_scale;
-        let step_up_5 = step_up_4 * type_scale;
-        let step_up_6 = step_up_5 * type_scale;
+    fn render(&mut self, window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
+        let colors = Colors::for_appearance(window);
 
         div()
+            .id("main")
             .size_full()
+            .p_4()
+            .bg(colors.background)
+            .overflow_scroll()
             .child(
                 div()
-                    .id("text-example")
-                    .overflow_y_scroll()
-                    .overflow_x_hidden()
-                    .bg(rgb(0xffffff))
-                    .size_full()
-                    .child(div().child(CharacterGrid::new().scale(base)))
+                    .flex()
+                    .flex_col()
+                    .gap_4()
+                    .max_w(px(600.))
                     .child(
                         div()
-                            .child(Specimen::new(self.next_id()).scale(step_down_2))
-                            .child(Specimen::new(self.next_id()).scale(step_down_2).invert())
-                            .child(Specimen::new(self.next_id()).scale(step_down_1))
-                            .child(Specimen::new(self.next_id()).scale(step_down_1).invert())
-                            .child(Specimen::new(self.next_id()).scale(base))
-                            .child(Specimen::new(self.next_id()).scale(base).invert())
-                            .child(Specimen::new(self.next_id()).scale(step_up_1))
-                            .child(Specimen::new(self.next_id()).scale(step_up_1).invert())
-                            .child(Specimen::new(self.next_id()).scale(step_up_2))
-                            .child(Specimen::new(self.next_id()).scale(step_up_2).invert())
-                            .child(Specimen::new(self.next_id()).scale(step_up_3))
-                            .child(Specimen::new(self.next_id()).scale(step_up_3).invert())
-                            .child(Specimen::new(self.next_id()).scale(step_up_4))
-                            .child(Specimen::new(self.next_id()).scale(step_up_4).invert())
-                            .child(Specimen::new(self.next_id()).scale(step_up_5))
-                            .child(Specimen::new(self.next_id()).scale(step_up_5).invert())
-                            .child(Specimen::new(self.next_id()).scale(step_up_6))
-                            .child(Specimen::new(self.next_id()).scale(step_up_6).invert()),
-                    ),
+                            .flex()
+                            .flex_col()
+                            .gap_1()
+                            .child(
+                                div()
+                                    .text_xl()
+                                    .font_weight(FontWeight::BOLD)
+                                    .text_color(colors.text)
+                                    .child("Text & Typography"),
+                            )
+                            .child(
+                                div().text_sm().text_color(colors.text_muted).child(
+                                    "Font styling, alignment, overflow, and unicode support",
+                                ),
+                            ),
+                    )
+                    .child(section(&colors, "Font Sizes", text_sizes_example(&colors)))
+                    .child(section(
+                        &colors,
+                        "Font Weights",
+                        text_weights_example(&colors),
+                    ))
+                    .child(section(
+                        &colors,
+                        "Text Alignment",
+                        text_alignment_example(&colors),
+                    ))
+                    .child(section(
+                        &colors,
+                        "Text Decoration",
+                        text_decoration_example(&colors),
+                    ))
+                    .child(section(
+                        &colors,
+                        "Line Height",
+                        line_height_example(&colors),
+                    ))
+                    .child(section(
+                        &colors,
+                        "Styled Text",
+                        styled_text_example(&colors),
+                    ))
+                    .child(section(
+                        &colors,
+                        "Text Overflow",
+                        text_overflow_example(&colors),
+                    ))
+                    .child(section(
+                        &colors,
+                        "Character Grid",
+                        character_grid_example(&colors),
+                    )),
             )
-            .child(div().w(px(240.)).h_full().bg(colors.container))
     }
+}
+
+fn section(colors: &Colors, title: &'static str, content: impl IntoElement) -> impl IntoElement {
+    let surface: Hsla = colors.surface.into();
+
+    div()
+        .flex()
+        .flex_col()
+        .gap_2()
+        .p_3()
+        .bg(surface.opacity(0.5))
+        .rounded_lg()
+        .child(
+            div()
+                .text_sm()
+                .font_weight(FontWeight::SEMIBOLD)
+                .text_color(colors.text)
+                .child(title),
+        )
+        .child(content)
 }
 
 fn main() {
     Application::new().run(|cx: &mut App| {
-        cx.set_menus(vec![Menu {
-            name: "GPUI Typography".into(),
-            items: vec![],
-        }]);
+        let bounds = Bounds::centered(None, size(px(650.), px(900.)), cx);
+        cx.open_window(
+            WindowOptions {
+                window_bounds: Some(WindowBounds::Windowed(bounds)),
+                ..Default::default()
+            },
+            |_, cx| cx.new(|_| TextExample),
+        )
+        .expect("Failed to open window");
 
-        cx.init_colors();
-        cx.set_global(GlobalTextContext(Arc::new(TextContext::default())));
-
-        let window = cx
-            .open_window(
-                WindowOptions {
-                    titlebar: Some(TitlebarOptions {
-                        title: Some("GPUI Typography".into()),
-                        ..Default::default()
-                    }),
-                    window_bounds: Some(WindowBounds::Windowed(bounds(
-                        point(px(0.0), px(0.0)),
-                        size(px(920.), px(720.)),
-                    ))),
-                    ..Default::default()
-                },
-                |_window, cx| cx.new(|_cx| TextExample { next_id: 0 }),
-            )
-            .unwrap();
-
-        window
-            .update(cx, |_view, _window, cx| {
-                cx.activate(true);
-            })
-            .unwrap();
+        init_example(cx, "Text");
     });
 }
+
 ```

@@ -1,79 +1,172 @@
-#!/bin/bash
+#!/usr/bin/env python3
+"""
+Generate example content pages for the Zola site from GPUI source files.
 
-# Generate example content pages for the Zola site from GPUI source files
-# Expects gpui-ce repo to be a sibling directory: ../gpui-ce/
-# Run from the repo root: ./script/examples
+Reads metadata from examples/examples.toml in the gpui-ce repo.
+Expects gpui-ce repo to be a sibling directory: ../gpui-ce/
 
-set -e
+Run from the repo root: ./script/examples
+"""
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_DIR="$SCRIPT_DIR/.."
-GPUI_CE_DIR="$REPO_DIR/../gpui-ce"
-EXAMPLES_DIR="$GPUI_CE_DIR/examples"
-OUTPUT_DIR="$REPO_DIR/content/examples"
+import os
+import re
+import sys
+from pathlib import Path
 
-# Check that gpui-ce exists as sibling
-if [ ! -d "$EXAMPLES_DIR" ]; then
-    echo "Error: Could not find gpui-ce examples at $EXAMPLES_DIR"
-    echo "Make sure gpui-ce is cloned as a sibling directory."
-    exit 1
-fi
+SCRIPT_DIR = Path(__file__).parent.resolve()
+REPO_DIR = SCRIPT_DIR.parent
+GPUI_CE_DIR = REPO_DIR.parent / "gpui-ce"
+EXAMPLES_TOML = GPUI_CE_DIR / "examples" / "examples.toml"
+OUTPUT_DIR = REPO_DIR / "content" / "examples"
 
-mkdir -p "$OUTPUT_DIR"
+CATEGORY_ORDER = ["learn", "bench", "legacy"]
 
-# Function to convert snake_case to Title Case
-to_title() {
-    echo "$1" | sed 's/_/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2))}1'
-}
 
-# Function to extract a description from the source file (first doc comment)
-extract_description() {
-    local file="$1"
-    # Try to get the first line comment that looks like a description
-    local desc=$(grep -m1 "^//!" "$file" 2>/dev/null | sed 's/^\/\/! *//' || true)
-    echo "$desc"
-}
+def parse_examples_toml(content):
+    """Simple parser for the examples.toml format."""
+    examples = []
+    current = None
 
-echo "Generating example pages from $EXAMPLES_DIR"
-echo ""
+    for line in content.splitlines():
+        line = line.strip()
 
-count=0
+        # Skip comments and empty lines
+        if not line or line.startswith("#"):
+            continue
 
-# Generate a markdown file for each example
-for example_file in "$EXAMPLES_DIR"/*.rs; do
-    if [ -f "$example_file" ]; then
-        filename=$(basename "$example_file" .rs)
-        title=$(to_title "$filename")
-        description=$(extract_description "$example_file")
-        output_file="$OUTPUT_DIR/$filename.md"
-        source_path="examples/$filename.rs"
+        # New example entry
+        if line == "[[examples]]":
+            if current:
+                examples.append(current)
+            current = {}
+            continue
+
+        # Parse key = "value" pairs
+        if current is not None and "=" in line:
+            match = re.match(r'^(\w+)\s*=\s*"(.*)"\s*$', line)
+            if match:
+                key, value = match.groups()
+                current[key] = value
+
+    # Don't forget the last entry
+    if current:
+        examples.append(current)
+
+    return examples
+
+
+def main():
+    # Check that gpui-ce exists as sibling
+    if not EXAMPLES_TOML.exists():
+        print(f"Error: Could not find examples.toml at {EXAMPLES_TOML}")
+        print("Make sure gpui-ce is cloned as a sibling directory.")
+        sys.exit(1)
+
+    # Parse the metadata
+    content = EXAMPLES_TOML.read_text()
+    examples = parse_examples_toml(content)
+
+    if not examples:
+        print("Error: No examples found in examples.toml")
+        sys.exit(1)
+
+    # Create output directory
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    print(f"Generating example pages from {EXAMPLES_TOML}")
+    print()
+
+    count = 0
+    examples_by_category = {}
+
+    for example in examples:
+        name = example.get("name", "")
+        title = example.get("title", name)
+        description = example.get("description", "")
+        source_path = example.get("path", "")
+        category = example.get("category", "legacy")
+
+        if not name or not source_path:
+            print(f"  ⚠ Skipping invalid entry: {example}")
+            continue
+
+        source_file = GPUI_CE_DIR / source_path
+        if not source_file.exists():
+            print(f"  ⚠ Skipping {name}: source file not found at {source_file}")
+            continue
 
         # Read the source code
-        source_code=$(cat "$example_file")
+        source_code = source_file.read_text()
 
-        echo "  → $filename"
+        # Generate the markdown file
+        output_file = OUTPUT_DIR / f"{name}.md"
 
-        cat > "$output_file" << EOF
-+++
-title = "$title"
-description = "$description"
+        content = f'''+++
+title = "{title}"
+description = "{description}"
 template = "page.html"
 
 [extra]
-run_command = "cargo run --example $filename"
-source_file = "$source_path"
+run_command = "cargo run --example {name}"
+source_file = "{source_path}"
+category = "{category}"
 +++
 
 ## Source Code
 
-\`\`\`rust
-$source_code
-\`\`\`
-EOF
+```rust
+{source_code}
+```
+'''
 
-        count=$((count + 1))
-    fi
-done
+        output_file.write_text(content)
+        print(f"  → {name}")
+        count += 1
 
-echo ""
-echo "Generated $count example pages in $OUTPUT_DIR"
+        # Track for index generation
+        if category not in examples_by_category:
+            examples_by_category[category] = []
+        examples_by_category[category].append(example)
+
+    # Generate the examples index page
+    index_content = '''+++
+title = "Examples"
+description = "Browse GPUI examples demonstrating various features and patterns."
+sort_by = "title"
+template = "examples.html"
+
+[extra]
+'''
+
+    # Add category data to the index
+    for category in CATEGORY_ORDER:
+        if category in examples_by_category:
+            index_content += f"{category}_examples = [\n"
+            for ex in examples_by_category[category]:
+                name = ex.get("name", "")
+                title = ex.get("title", name)
+                desc = ex.get("description", "")
+                index_content += f'    {{ name = "{name}", title = "{title}", description = "{desc}" }},\n'
+            index_content += "]\n"
+
+    index_content += "+++\n"
+
+    index_file = OUTPUT_DIR / "_index.md"
+    index_file.write_text(index_content)
+
+    print()
+    print(f"Generated {count} example pages in {OUTPUT_DIR}")
+
+    # Clean up old files that are no longer in the metadata
+    valid_names = {ex.get("name") for ex in examples if ex.get("name")}
+    valid_names.add("_index")  # Don't delete the index
+
+    for md_file in OUTPUT_DIR.glob("*.md"):
+        stem = md_file.stem
+        if stem not in valid_names:
+            print(f"  🗑 Removing outdated: {stem}.md")
+            md_file.unlink()
+
+
+if __name__ == "__main__":
+    main()

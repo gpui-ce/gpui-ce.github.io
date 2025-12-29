@@ -1,11 +1,12 @@
 +++
 title = "Shadow"
-description = ""
+description = "Showcases various shadow styles and their rendering performance."
 template = "page.html"
 
 [extra]
 run_command = "cargo run --example shadow"
-source_file = "examples/shadow.rs"
+source_file = "examples/bench/shadow.rs"
+category = "bench"
 +++
 
 ## Source Code
@@ -596,4 +597,5 @@ fn main() {
         cx.activate(true);
     });
 }
+
 ```

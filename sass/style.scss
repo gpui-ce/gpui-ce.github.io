@@ -1,17 +1,23 @@
 :root {
-    --text: #EDDAD3;
-    --text-muted: #958E99;
-    --text-accent: #FBD057;
-    --background: #1A1B25;
+    --text: #eddad3;
+    --text-muted: #958e99;
+    --text-accent: #fbd057;
+    --background: #1a1b25;
     --background-accent: #423841;
     --border: #000000;
-    --highlight: #62FFF1;
+    --highlight: #62fff1;
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+html,
+body {
+    height: 100%;
+    overflow: hidden;
 }
 
 html {
@@ -23,7 +29,8 @@ body {
     background: var(--background);
     color: var(--text-muted);
     line-height: 1.4;
-    padding: 12px;
+    display: flex;
+    flex-direction: column;
 }
 
 a {
@@ -40,9 +47,9 @@ a:hover {
 nav {
     display: flex;
     gap: 16px;
-    margin-bottom: 24px;
-    padding-bottom: 8px;
+    padding: 12px;
     border-bottom: 1px solid var(--background-accent);
+    flex-shrink: 0;
 }
 
 nav a.active {
@@ -51,6 +58,103 @@ nav a.active {
 
 .container {
     max-width: 800px;
+    padding: 12px;
+}
+
+/* Homepage two-column layout */
+.home-layout {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 24px;
+}
+
+.examples-sidebar {
+    width: 520px;
+    flex: 1;
+    padding: 12px 24px;
+    border-left: 1px solid var(--background-accent);
+    overflow-y: auto;
+}
+
+.examples-header {
+    margin-bottom: 20px;
+}
+
+.examples-header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.examples-header p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.example-category {
+    margin-bottom: 20px;
+}
+
+.example-category h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.example-list-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.example-list-compact li a {
+    display: block;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.example-list-compact li a:hover {
+    color: var(--highlight);
+}
+
+.example-list-compact .example-description {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    max-width: 540px;
+}
+
+@media (max-width: 800px) {
+    html,
+    body {
+        height: auto;
+        overflow: auto;
+    }
+
+    .home-layout {
+        flex-direction: column;
+    }
+
+    .main-content {
+        overflow-y: visible;
+    }
+
+    .examples-sidebar {
+        width: 100%;
+        padding-top: 24px;
+        border-left: none;
+        border-top: 1px solid var(--background-accent);
+        overflow-y: visible;
+    }
 }
 
 .header {
@@ -94,20 +198,57 @@ ul {
 }
 
 .example-list {
-    column-count: 3;
-    column-gap: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .example-list li {
     break-inside: avoid;
 }
 
+.example-list li a {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.example-list li a:hover {
+    color: var(--highlight);
+}
+
+.example-description {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.example-section {
+    margin-bottom: 32px;
+}
+
+.example-section h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.section-description {
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+}
+
 .run-hint {
-    margin-top: 8px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--background-accent);
     color: var(--text-muted);
 }
 
-code, pre {
+code,
+pre {
     font-family: "SF Mono", Menlo, Monaco, monospace;
     /* font-size: 1rem; */
     background: color-mix(in srgb, var(--background-accent) 50%, transparent);

@@ -1,11 +1,12 @@
 +++
-title = "Paths Bench"
-description = ""
+title = "Paths Benchmark"
+description = "Benchmarks custom path rendering performance with many vector shapes."
 template = "page.html"
 
 [extra]
-run_command = "cargo run -p gpui --example paths_bench"
-source_file = "crates/gpui/examples/paths_bench.rs"
+run_command = "cargo run --example paths_bench"
+source_file = "examples/bench/paths_bench.rs"
+category = "bench"
 +++
 
 ## Source Code

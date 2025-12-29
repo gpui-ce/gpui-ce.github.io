@@ -3,21 +3,45 @@
 {% block title %}{{ page.title }} — {{ config.title }}{% endblock %}
 
 {% block content %}
-<div class="container">
-    <header class="header">
-        <a href="{{ get_url(path="@/examples/_index.md") }}">← Examples</a>
-        <h1>{{ page.title }}</h1>
-        {% if page.extra.run_command %}
-        <code>{{ page.extra.run_command }}</code>
-        {% endif %}
-    </header>
+<div class="example-page-layout">
+    <div class="example-meta-col">
+        <a href="{{ get_url(path="@/examples/_index.md") }}" class="back-link">← Examples</a>
 
-    <div class="content">
-        {{ page.content | safe }}
+        <header class="example-header">
+            <h1>{{ page.title }}</h1>
+            {% if page.description %}
+            <p class="example-page-description">{{ page.description }}</p>
+            {% endif %}
+        </header>
+
+        {% if page.extra.run_command %}
+        <section class="example-meta-section">
+            <h2>Run</h2>
+            <pre>{{ page.extra.run_command }}</pre>
+        </section>
+        {% endif %}
+
+        {% if page.extra.category %}
+        <section class="example-meta-section">
+            <h2>Category</h2>
+            <p>{{ page.extra.category }}</p>
+        </section>
+        {% endif %}
+
+        {% if page.extra.source_file %}
+        <section class="example-meta-section">
+            <h2>Source</h2>
+            <a href="{{ config.extra.github_repo }}/blob/main/{{ page.extra.source_file }}" class="github-link">
+                View on GitHub →
+            </a>
+        </section>
+        {% endif %}
     </div>
 
-    {% if page.extra.source_file %}
-    <p><a href="{{ config.extra.github_repo }}/blob/main/{{ page.extra.source_file }}">View on GitHub</a></p>
-    {% endif %}
+    <div class="example-source-col">
+        <div class="content">
+            {{ page.content | safe }}
+        </div>
+    </div>
 </div>
 {% endblock %}

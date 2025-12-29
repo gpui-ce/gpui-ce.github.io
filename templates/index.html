@@ -73,11 +73,14 @@
             <h3>Learn</h3>
             <ul class="example-list-compact">
                 {% for example in examples_section.extra.learn_examples %}
+                {% set slug = example.name | replace(from="_", to="-") %}
                 <li>
-                    <a href="{{ get_url(path="examples/" ~ example.name ~ "/") }}">{{ example.title }}</a>
-                    {% if example.description %}
-                    <p class="example-description">{{ example.description }}</p>
-                    {% endif %}
+                    <a href="{{ get_url(path="examples/" ~ slug ~ "/") }}" class="example-item">
+                        <span class="example-title">{{ example.title }}</span>
+                        {% if example.description %}
+                        <span class="example-description">{{ example.description }}</span>
+                        {% endif %}
+                    </a>
                 </li>
                 {% endfor %}
             </ul>
@@ -89,11 +92,14 @@
             <h3>Benchmarks</h3>
             <ul class="example-list-compact">
                 {% for example in examples_section.extra.bench_examples %}
+                {% set slug = example.name | replace(from="_", to="-") %}
                 <li>
-                    <a href="{{ get_url(path="examples/" ~ example.name ~ "/") }}">{{ example.title }}</a>
-                    {% if example.description %}
-                    <p class="example-description">{{ example.description }}</p>
-                    {% endif %}
+                    <a href="{{ get_url(path="examples/" ~ slug ~ "/") }}" class="example-item">
+                        <span class="example-title">{{ example.title }}</span>
+                        {% if example.description %}
+                        <span class="example-description">{{ example.description }}</span>
+                        {% endif %}
+                    </a>
                 </li>
                 {% endfor %}
             </ul>
@@ -105,11 +111,14 @@
             <h3>More Examples</h3>
             <ul class="example-list-compact">
                 {% for example in examples_section.extra.legacy_examples %}
+                {% set slug = example.name | replace(from="_", to="-") %}
                 <li>
-                    <a href="{{ get_url(path="examples/" ~ example.name ~ "/") }}">{{ example.title }}</a>
-                    {% if example.description %}
-                    <p class="example-description">{{ example.description }}</p>
-                    {% endif %}
+                    <a href="{{ get_url(path="examples/" ~ slug ~ "/") }}" class="example-item">
+                        <span class="example-title">{{ example.title }}</span>
+                        {% if example.description %}
+                        <span class="example-description">{{ example.description }}</span>
+                        {% endif %}
+                    </a>
                 </li>
                 {% endfor %}
             </ul>

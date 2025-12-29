@@ -15,8 +15,9 @@
         <p class="section-description">Educational examples to help you learn GPUI fundamentals.</p>
         <ul class="example-list">
             {% for example in section.extra.learn_examples %}
+            {% set slug = example.name | replace(from="_", to="-") %}
             <li>
-                <a href="{{ get_url(path="examples/" ~ example.name ~ "/") }}">{{ example.title }}</a>
+                <a href="{{ get_url(path="examples/" ~ slug ~ "/") }}">{{ example.title }}</a>
                 {% if example.description %}
                 <p class="example-description">{{ example.description }}</p>
                 {% endif %}
@@ -32,8 +33,9 @@
         <p class="section-description">Performance benchmarks and stress tests.</p>
         <ul class="example-list">
             {% for example in section.extra.bench_examples %}
+            {% set slug = example.name | replace(from="_", to="-") %}
             <li>
-                <a href="{{ get_url(path="examples/" ~ example.name ~ "/") }}">{{ example.title }}</a>
+                <a href="{{ get_url(path="examples/" ~ slug ~ "/") }}">{{ example.title }}</a>
                 {% if example.description %}
                 <p class="example-description">{{ example.description }}</p>
                 {% endif %}
@@ -49,8 +51,9 @@
         <p class="section-description">Additional examples covering specific features.</p>
         <ul class="example-list">
             {% for example in section.extra.legacy_examples %}
+            {% set slug = example.name | replace(from="_", to="-") %}
             <li>
-                <a href="{{ get_url(path="examples/" ~ example.name ~ "/") }}">{{ example.title }}</a>
+                <a href="{{ get_url(path="examples/" ~ slug ~ "/") }}">{{ example.title }}</a>
                 {% if example.description %}
                 <p class="example-description">{{ example.description }}</p>
                 {% endif %}

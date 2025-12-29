@@ -1,6 +1,6 @@
 +++
 title = "Pattern"
-description = "Demonstrates pattern fills and gradients for background styling."
+description = ""
 template = "page.html"
 
 [extra]

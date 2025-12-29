@@ -1,6 +1,6 @@
 +++
 title = "Async Tasks"
-description = "Shows how to spawn async tasks, handle background work, and update the UI from async contexts."
+description = "This example demonstrates different async patterns in GPUI: cx.spawn, cx.background_spawn, task management, progress updates."
 template = "page.html"
 
 [extra]

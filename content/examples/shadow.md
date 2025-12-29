@@ -1,6 +1,6 @@
 +++
 title = "Shadow"
-description = "Showcases various shadow styles and their rendering performance."
+description = ""
 template = "page.html"
 
 [extra]

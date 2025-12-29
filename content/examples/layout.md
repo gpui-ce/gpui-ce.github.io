@@ -1,6 +1,6 @@
 +++
 title = "Layout"
-description = "Demonstrates flexbox and grid layouts, including alignment, grow/shrink, spans, and common app shell patterns."
+description = "This example demonstrates different layout approaches in GPUI: flexbox, grid, common patterns."
 template = "page.html"
 
 [extra]

@@ -1,6 +1,6 @@
 +++
-title = "Paths Benchmark"
-description = "Benchmarks custom path rendering performance with many vector shapes."
+title = "Paths Bench"
+description = ""
 template = "page.html"
 
 [extra]

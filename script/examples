@@ -2,7 +2,12 @@
 """
 Generate example content pages for the Zola site from GPUI source files.
 
-Reads metadata from examples/examples.toml in the gpui-ce repo.
+Extracts metadata directly from source files:
+- Name: derived from filename (e.g., animation.rs → animation)
+- Category: derived from directory (e.g., examples/learn/ → learn)
+- Title: extracted from first line of //! doc comment
+- Description: extracted from //! doc comment body
+
 Expects gpui-ce repo to be a sibling directory: ../gpui-ce/
 
 Run from the repo root: ./script/examples
@@ -16,79 +21,214 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).parent.resolve()
 REPO_DIR = SCRIPT_DIR.parent
 GPUI_CE_DIR = REPO_DIR.parent / "gpui-ce"
-EXAMPLES_TOML = GPUI_CE_DIR / "examples" / "examples.toml"
+EXAMPLES_DIR = GPUI_CE_DIR / "examples"
 OUTPUT_DIR = REPO_DIR / "content" / "examples"
 
-CATEGORY_ORDER = ["learn", "bench", "legacy"]
+# Categories to scan, in display order
+CATEGORIES = ["learn", "bench"]
 
 
-def parse_examples_toml(content):
-    """Simple parser for the examples.toml format."""
-    examples = []
-    current = None
+def extract_doc_comment(source_code: str) -> tuple[str, str]:
+    """
+    Extract the //! module doc comment from source code.
 
-    for line in content.splitlines():
+    Returns (title, description) tuple.
+    The title is derived from the first line (with "Example" suffix stripped).
+    The description is built from the doc comment body.
+    """
+    lines = []
+    for line in source_code.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("//!"):
+            # Remove the //! prefix and any single leading space
+            content = stripped[3:]
+            if content.startswith(" "):
+                content = content[1:]
+            lines.append(content)
+        elif stripped and not stripped.startswith("//"):
+            # Stop at first non-comment, non-empty line
+            break
+
+    if not lines:
+        return "", ""
+
+    # Join all non-empty lines to get the full doc comment text
+    full_text = " ".join(line.strip() for line in lines if line.strip())
+
+    # Try to extract a title from the first line
+    first_line = lines[0].strip() if lines else ""
+
+    # Check if first line looks like a title (short, ends with "Example" or similar)
+    title = ""
+    if first_line:
+        # If it's a short title line (like "Animation Example")
+        if re.match(r"^[\w\s&]+Example\s*$", first_line, re.IGNORECASE):
+            title = re.sub(
+                r"\s*(Patterns\s+)?Example\s*$", "", first_line, flags=re.IGNORECASE
+            ).strip()
+        # If the first line is very short (likely a title)
+        elif len(first_line) < 40 and not first_line.endswith("."):
+            title = first_line
+            # Strip common suffixes
+            title = re.sub(
+                r"\s*(Patterns\s+)?Example\s*$", "", title, flags=re.IGNORECASE
+            ).strip()
+
+    # Build description from the doc comment
+    description_lines = []
+    skip_first = bool(title)  # Skip first line if we used it as title
+
+    for i, line in enumerate(lines):
+        if skip_first and i == 0:
+            continue
         line = line.strip()
+        if line:
+            description_lines.append(line)
 
-        # Skip comments and empty lines
-        if not line or line.startswith("#"):
+    # Process description
+    if description_lines:
+        # Check for "This example demonstrates/shows" pattern
+        intro_pattern = r"^This example (demonstrates|shows|covers)"
+        intro_line = None
+        list_items = []
+
+        for line in description_lines:
+            if re.match(intro_pattern, line, re.IGNORECASE):
+                intro_line = line
+            elif re.match(r"^\d+\.", line):
+                # Numbered list item
+                item = re.sub(r"^\d+\.\s*", "", line)
+                # Remove inline code markers
+                item = re.sub(r"`([^`]+)`", r"\1", item)
+                # Remove trailing explanations
+                item = re.sub(r"\s+-\s+.*$", "", item)
+                list_items.append(item)
+
+        if intro_line:
+            # Use the intro line and append list items
+            description = intro_line.rstrip(":").rstrip(".")
+            if list_items:
+                description += ": " + ", ".join(list_items[:5]).lower()
+                if len(list_items) > 5:
+                    description += ", and more"
+            description += "."
+        elif list_items:
+            # Just list items, no intro
+            description = "Demonstrates " + ", ".join(list_items[:5]).lower()
+            if len(list_items) > 5:
+                description += ", and more"
+            description += "."
+        else:
+            # Use first paragraph as description
+            first_para = []
+            for line in description_lines:
+                if not line:
+                    break
+                first_para.append(line)
+            description = " ".join(first_para)
+            # Truncate if too long
+            if len(description) > 200:
+                description = description[:197] + "..."
+    else:
+        description = ""
+
+    # If no title was found but we have a description, try to derive one
+    if not title and description:
+        # Use the full_text to look for patterns
+        match = re.match(r"^([\w\s&]+?)\s*[-–—:.]", full_text)
+        if match and len(match.group(1)) < 40:
+            title = match.group(1).strip()
+
+    # Clean up
+    description = description.replace('"', '\\"')
+    # Remove double spaces
+    description = re.sub(r"\s+", " ", description).strip()
+
+    return title, description
+
+
+def name_to_title(name: str) -> str:
+    """Convert a snake_case name to a Title Case title."""
+    return " ".join(word.capitalize() for word in name.split("_"))
+
+
+def discover_examples() -> list[dict]:
+    """
+    Discover all examples by scanning the examples directories.
+
+    Returns a list of example dicts with keys:
+    - name: example name (from filename)
+    - title: display title (from doc comment or derived from name)
+    - description: description (from doc comment)
+    - path: relative path to source file
+    - category: category (from directory)
+    """
+    examples = []
+
+    for category in CATEGORIES:
+        category_dir = EXAMPLES_DIR / category
+        if not category_dir.exists():
             continue
 
-        # New example entry
-        if line == "[[examples]]":
-            if current:
-                examples.append(current)
-            current = {}
-            continue
+        for source_file in sorted(category_dir.glob("*.rs")):
+            name = source_file.stem
 
-        # Parse key = "value" pairs
-        if current is not None and "=" in line:
-            match = re.match(r'^(\w+)\s*=\s*"(.*)"\s*$', line)
-            if match:
-                key, value = match.groups()
-                current[key] = value
+            # Skip non-example files
+            if name.startswith("_") or name == "mod" or name == "lib":
+                continue
 
-    # Don't forget the last entry
-    if current:
-        examples.append(current)
+            source_code = source_file.read_text()
+            title, description = extract_doc_comment(source_code)
+
+            # Fallback to name-derived title if not found
+            if not title:
+                title = name_to_title(name)
+
+            # Construct relative path from repo root
+            rel_path = source_file.relative_to(GPUI_CE_DIR)
+
+            examples.append(
+                {
+                    "name": name,
+                    "title": title,
+                    "description": description,
+                    "path": str(rel_path),
+                    "category": category,
+                }
+            )
 
     return examples
 
 
 def main():
     # Check that gpui-ce exists as sibling
-    if not EXAMPLES_TOML.exists():
-        print(f"Error: Could not find examples.toml at {EXAMPLES_TOML}")
+    if not EXAMPLES_DIR.exists():
+        print(f"Error: Could not find examples directory at {EXAMPLES_DIR}")
         print("Make sure gpui-ce is cloned as a sibling directory.")
         sys.exit(1)
 
-    # Parse the metadata
-    content = EXAMPLES_TOML.read_text()
-    examples = parse_examples_toml(content)
+    # Discover examples from source files
+    examples = discover_examples()
 
     if not examples:
-        print("Error: No examples found in examples.toml")
+        print("Error: No examples found in examples directories")
         sys.exit(1)
 
     # Create output directory
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    print(f"Generating example pages from {EXAMPLES_TOML}")
+    print(f"Generating example pages from {EXAMPLES_DIR}")
     print()
 
     count = 0
     examples_by_category = {}
 
     for example in examples:
-        name = example.get("name", "")
-        title = example.get("title", name)
-        description = example.get("description", "")
-        source_path = example.get("path", "")
-        category = example.get("category", "legacy")
-
-        if not name or not source_path:
-            print(f"  ⚠ Skipping invalid entry: {example}")
-            continue
+        name = example["name"]
+        title = example["title"]
+        description = example["description"]
+        source_path = example["path"]
+        category = example["category"]
 
         source_file = GPUI_CE_DIR / source_path
         if not source_file.exists():
@@ -120,7 +260,7 @@ category = "{category}"
 '''
 
         output_file.write_text(content)
-        print(f"  → {name}")
+        print(f"  → {name} ({category})")
         count += 1
 
         # Track for index generation
@@ -129,23 +269,23 @@ category = "{category}"
         examples_by_category[category].append(example)
 
     # Generate the examples index page
-    index_content = '''+++
+    index_content = """+++
 title = "Examples"
 description = "Browse GPUI examples demonstrating various features and patterns."
 sort_by = "title"
 template = "examples.html"
 
 [extra]
-'''
+"""
 
     # Add category data to the index
-    for category in CATEGORY_ORDER:
+    for category in CATEGORIES:
         if category in examples_by_category:
             index_content += f"{category}_examples = [\n"
             for ex in examples_by_category[category]:
-                name = ex.get("name", "")
-                title = ex.get("title", name)
-                desc = ex.get("description", "")
+                name = ex["name"]
+                title = ex["title"]
+                desc = ex["description"]
                 index_content += f'    {{ name = "{name}", title = "{title}", description = "{desc}" }},\n'
             index_content += "]\n"
 
@@ -157,8 +297,8 @@ template = "examples.html"
     print()
     print(f"Generated {count} example pages in {OUTPUT_DIR}")
 
-    # Clean up old files that are no longer in the metadata
-    valid_names = {ex.get("name") for ex in examples if ex.get("name")}
+    # Clean up old files that are no longer in discovered examples
+    valid_names = {ex["name"] for ex in examples}
     valid_names.add("_index")  # Don't delete the index
 
     for md_file in OUTPUT_DIR.glob("*.md"):

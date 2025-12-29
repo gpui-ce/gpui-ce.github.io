@@ -1,6 +1,6 @@
 +++
 title = "Animation"
-description = "Demonstrates animation capabilities including easing functions, transformations (rotate, scale), and repeating animations."
+description = "This example demonstrates animation capabilities in GPUI: basic animations with with_animation, easing functions, transformations, repeating and duration controls."
 template = "page.html"
 
 [extra]

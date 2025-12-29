@@ -1,6 +1,6 @@
 +++
 title = "Interactive Elements"
-description = "Covers mouse interactions including clicks, hover states, drag and drop, and low-level mouse event handling."
+description = "This example demonstrates interactive patterns in GPUI: click events, hover states, mouse events, drag and drop."
 template = "page.html"
 
 [extra]

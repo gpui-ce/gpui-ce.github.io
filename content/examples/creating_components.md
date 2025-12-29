@@ -1,6 +1,6 @@
 +++
 title = "Creating Components"
-description = "Covers different component patterns: RenderOnce for stateless components, use_state for element-scoped state, and Render for entity-backed components."
+description = "This example demonstrates three different approaches to creating interactive: use_state, renderonce, render."
 template = "page.html"
 
 [extra]

@@ -1,6 +1,6 @@
 +++
 title = "Data Table"
-description = "Performance benchmark rendering a large data table with many rows and columns."
+description = ""
 template = "page.html"
 
 [extra]

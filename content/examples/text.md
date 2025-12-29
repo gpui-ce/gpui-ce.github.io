@@ -1,6 +1,6 @@
 +++
-title = "Text & Typography"
-description = "Covers text styling, alignment, decoration, overflow handling, styled text with inline highlights, and unicode/emoji support."
+title = "Text"
+description = "This example demonstrates text capabilities in GPUI: text styling, text alignment, text decoration, text overflow, styled text, and more."
 template = "page.html"
 
 [extra]

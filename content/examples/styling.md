@@ -1,6 +1,6 @@
 +++
 title = "Styling"
-description = "Shows styling fundamentals including colors, borders, shadows, and automatic dark/light theme support."
+description = "This example demonstrates different styling approaches in GPUI: interactive states, conditional styling, theming patterns."
 template = "page.html"
 
 [extra]

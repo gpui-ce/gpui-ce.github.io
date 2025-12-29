@@ -1,6 +1,6 @@
 +++
 title = "Custom Drawing"
-description = "Demonstrates the canvas element, PathBuilder for custom shapes, and interactive drawing with mouse events."
+description = "This example demonstrates custom drawing in GPUI using: canvas element, pathbuilder, window.paint_* methods, interactive drawing."
 template = "page.html"
 
 [extra]

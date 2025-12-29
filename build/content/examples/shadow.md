@@ -1,6 +1,6 @@
 +++
 title = "Shadow"
-description = "Showcases various shadow styles and their rendering performance."
+description = ""
 template = "page.html"
 
 [extra]
@@ -11,591 +11,588 @@ category = "bench"
 
 ## Source Code
 
-```rust
-use gpui::{
-    App, Application, Bounds, BoxShadow, Context, Div, SharedString, Window, WindowBounds,
-    WindowOptions, div, hsla, point, prelude::*, px, relative, rgb, size,
-};
+<pre><code class="language-rust"><span class="keyword">use</span> gpui<span class="punctuation">::{</span>
+    <span class="constructor">App</span><span class="punctuation">,</span> <span class="constructor">Application</span><span class="punctuation">,</span> <span class="constructor">Bounds</span><span class="punctuation">,</span> <span class="constructor">BoxShadow</span><span class="punctuation">,</span> <span class="constructor">Context</span><span class="punctuation">,</span> <span class="constructor">Div</span><span class="punctuation">,</span> <span class="constructor">SharedString</span><span class="punctuation">,</span> <span class="constructor">Window</span><span class="punctuation">,</span> <span class="constructor">WindowBounds</span><span class="punctuation">,</span>
+    <span class="constructor">WindowOptions</span><span class="punctuation">,</span> div<span class="punctuation">,</span> hsla<span class="punctuation">,</span> point<span class="punctuation">,</span> prelude<span class="punctuation">::</span><span class="operator">*</span><span class="punctuation">,</span> px<span class="punctuation">,</span> relative<span class="punctuation">,</span> rgb<span class="punctuation">,</span> size<span class="punctuation">,</span>
+<span class="punctuation">};</span>
 
-struct Shadow {}
+<span class="keyword">struct</span> <span class="type">Shadow</span> <span class="punctuation">{}</span>
 
-impl Shadow {
-    fn base() -> Div {
-        div()
-            .size_16()
-            .bg(rgb(0xffffff))
-            .rounded_full()
-            .border_1()
-            .border_color(hsla(0.0, 0.0, 0.0, 0.1))
-    }
+<span class="keyword">impl</span> <span class="type">Shadow</span> <span class="punctuation">{</span>
+    <span class="keyword">fn</span> <span class="function">base</span><span class="punctuation">()</span> -&gt; <span class="type">Div</span> <span class="punctuation">{</span>
+        <span class="function">div</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">size_16</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0xffffff</span><span class="punctuation">))</span>
+            <span class="punctuation">.</span><span class="property">rounded_full</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">border_1</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.1</span><span class="punctuation">))</span>
+    <span class="punctuation">}</span>
 
-    fn square() -> Div {
-        div()
-            .size_16()
-            .bg(rgb(0xffffff))
-            .border_1()
-            .border_color(hsla(0.0, 0.0, 0.0, 0.1))
-    }
+    <span class="keyword">fn</span> <span class="function">square</span><span class="punctuation">()</span> -&gt; <span class="type">Div</span> <span class="punctuation">{</span>
+        <span class="function">div</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">size_16</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0xffffff</span><span class="punctuation">))</span>
+            <span class="punctuation">.</span><span class="property">border_1</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.1</span><span class="punctuation">))</span>
+    <span class="punctuation">}</span>
 
-    fn rounded_small() -> Div {
-        div()
-            .size_16()
-            .bg(rgb(0xffffff))
-            .rounded(px(4.))
-            .border_1()
-            .border_color(hsla(0.0, 0.0, 0.0, 0.1))
-    }
+    <span class="keyword">fn</span> <span class="function">rounded_small</span><span class="punctuation">()</span> -&gt; <span class="type">Div</span> <span class="punctuation">{</span>
+        <span class="function">div</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">size_16</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0xffffff</span><span class="punctuation">))</span>
+            <span class="punctuation">.</span><span class="property">rounded</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">4.</span><span class="punctuation">))</span>
+            <span class="punctuation">.</span><span class="property">border_1</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.1</span><span class="punctuation">))</span>
+    <span class="punctuation">}</span>
 
-    fn rounded_medium() -> Div {
-        div()
-            .size_16()
-            .bg(rgb(0xffffff))
-            .rounded(px(8.))
-            .border_1()
-            .border_color(hsla(0.0, 0.0, 0.0, 0.1))
-    }
+    <span class="keyword">fn</span> <span class="function">rounded_medium</span><span class="punctuation">()</span> -&gt; <span class="type">Div</span> <span class="punctuation">{</span>
+        <span class="function">div</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">size_16</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0xffffff</span><span class="punctuation">))</span>
+            <span class="punctuation">.</span><span class="property">rounded</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">))</span>
+            <span class="punctuation">.</span><span class="property">border_1</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.1</span><span class="punctuation">))</span>
+    <span class="punctuation">}</span>
 
-    fn rounded_large() -> Div {
-        div()
-            .size_16()
-            .bg(rgb(0xffffff))
-            .rounded(px(12.))
-            .border_1()
-            .border_color(hsla(0.0, 0.0, 0.0, 0.1))
-    }
-}
+    <span class="keyword">fn</span> <span class="function">rounded_large</span><span class="punctuation">()</span> -&gt; <span class="type">Div</span> <span class="punctuation">{</span>
+        <span class="function">div</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">size_16</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0xffffff</span><span class="punctuation">))</span>
+            <span class="punctuation">.</span><span class="property">rounded</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">12.</span><span class="punctuation">))</span>
+            <span class="punctuation">.</span><span class="property">border_1</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.1</span><span class="punctuation">))</span>
+    <span class="punctuation">}</span>
+<span class="punctuation">}</span>
 
-fn example(label: impl Into<SharedString>, example: impl IntoElement) -> impl IntoElement {
-    let label = label.into();
+<span class="keyword">fn</span> <span class="function">example</span><span class="punctuation">(</span><span class="variable">label</span><span class="punctuation">:</span> <span class="keyword">impl</span> <span class="type">Into</span><span class="punctuation">&lt;</span><span class="type">SharedString</span><span class="punctuation">&gt;,</span> <span class="variable">example</span><span class="punctuation">:</span> <span class="keyword">impl</span> <span class="type">IntoElement</span><span class="punctuation">)</span> -&gt; <span class="keyword">impl</span> <span class="type">IntoElement</span> <span class="punctuation">{</span>
+    <span class="keyword">let</span> label = label<span class="punctuation">.</span><span class="property">into</span><span class="punctuation">();</span>
 
-    div()
-        .flex()
-        .flex_col()
-        .justify_center()
-        .items_center()
-        .w(relative(1. / 6.))
-        .border_r_1()
-        .border_color(hsla(0.0, 0.0, 0.0, 1.0))
-        .child(
-            div()
-                .flex()
-                .items_center()
-                .justify_center()
-                .flex_1()
-                .py_12()
-                .child(example),
-        )
-        .child(
-            div()
-                .w_full()
-                .border_t_1()
-                .border_color(hsla(0.0, 0.0, 0.0, 1.0))
-                .p_1()
-                .flex()
-                .items_center()
-                .child(label),
-        )
-}
+    <span class="function">div</span><span class="punctuation">()</span>
+        <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
+        <span class="punctuation">.</span><span class="property">flex_col</span><span class="punctuation">()</span>
+        <span class="punctuation">.</span><span class="property">justify_center</span><span class="punctuation">()</span>
+        <span class="punctuation">.</span><span class="property">items_center</span><span class="punctuation">()</span>
+        <span class="punctuation">.</span><span class="property">w</span><span class="punctuation">(</span><span class="function">relative</span><span class="punctuation">(</span><span class="constant">1.</span> / <span class="constant">6.</span><span class="punctuation">))</span>
+        <span class="punctuation">.</span><span class="property">border_r_1</span><span class="punctuation">()</span>
+        <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">))</span>
+        <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
+            <span class="function">div</span><span class="punctuation">()</span>
+                <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
+                <span class="punctuation">.</span><span class="property">items_center</span><span class="punctuation">()</span>
+                <span class="punctuation">.</span><span class="property">justify_center</span><span class="punctuation">()</span>
+                <span class="punctuation">.</span><span class="property">flex_1</span><span class="punctuation">()</span>
+                <span class="punctuation">.</span><span class="property">py_12</span><span class="punctuation">()</span>
+                <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>example<span class="punctuation">),</span>
+        <span class="punctuation">)</span>
+        <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>
+            <span class="function">div</span><span class="punctuation">()</span>
+                <span class="punctuation">.</span><span class="property">w_full</span><span class="punctuation">()</span>
+                <span class="punctuation">.</span><span class="property">border_t_1</span><span class="punctuation">()</span>
+                <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">))</span>
+                <span class="punctuation">.</span><span class="property">p_1</span><span class="punctuation">()</span>
+                <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
+                <span class="punctuation">.</span><span class="property">items_center</span><span class="punctuation">()</span>
+                <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span>label<span class="punctuation">),</span>
+        <span class="punctuation">)</span>
+<span class="punctuation">}</span>
 
-impl Render for Shadow {
-    fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
-        div()
-            .id("shadow-example")
-            .overflow_y_scroll()
-            .bg(rgb(0xffffff))
-            .size_full()
-            .text_xs()
-            .child(div().flex().flex_col().w_full().children(vec![
-                div()
-                    .border_b_1()
-                    .border_color(hsla(0.0, 0.0, 0.0, 1.0))
-                    .flex()
-                    .flex_row()
-                    .children(vec![
-                        example(
-                            "Square",
-                            Shadow::square()
-                                .shadow(vec![BoxShadow {
-                                    color: hsla(0.0, 0.5, 0.5, 0.3),
-                                    offset: point(px(0.), px(8.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(0.),
-                                }]),
-                        ),
-                        example(
-                            "Rounded 4",
-                            Shadow::rounded_small()
-                                .shadow(vec![BoxShadow {
-                                    color: hsla(0.0, 0.5, 0.5, 0.3),
-                                    offset: point(px(0.), px(8.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(0.),
-                                }]),
-                        ),
-                        example(
-                            "Rounded 8",
-                            Shadow::rounded_medium()
-                                .shadow(vec![BoxShadow {
-                                    color: hsla(0.0, 0.5, 0.5, 0.3),
-                                    offset: point(px(0.), px(8.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(0.),
-                                }]),
-                        ),
-                        example(
-                            "Rounded 16",
-                            Shadow::rounded_large()
-                                .shadow(vec![BoxShadow {
-                                    color: hsla(0.0, 0.5, 0.5, 0.3),
-                                    offset: point(px(0.), px(8.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(0.),
-                                }]),
-                        ),
-                        example(
-                            "Circle",
-                            Shadow::base()
-                                .shadow(vec![BoxShadow {
-                                    color: hsla(0.0, 0.5, 0.5, 0.3),
-                                    offset: point(px(0.), px(8.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(0.),
-                                }]),
-                        ),
-                    ]),
-                div()
-                    .border_b_1()
-                    .border_color(hsla(0.0, 0.0, 0.0, 1.0))
-                    .flex()
-                    .w_full()
-                    .children(vec![
-                        example("None", Shadow::base()),
-                        // 2Xsmall shadow
-                        example("2X Small", Shadow::base().shadow_2xs()),
-                        // Xsmall shadow
-                        example("Extra Small", Shadow::base().shadow_xs()),
-                        // Small shadow
-                        example("Small", Shadow::base().shadow_sm()),
-                        // Medium shadow
-                        example("Medium", Shadow::base().shadow_md()),
-                        // Large shadow
-                        example("Large", Shadow::base().shadow_lg()),
-                        example("Extra Large", Shadow::base().shadow_xl()),
-                        example("2X Large", Shadow::base().shadow_2xl()),
-                    ]),
-                // Horizontal list of increasing blur radii
-                div()
-                    .border_b_1()
-                    .border_color(hsla(0.0, 0.0, 0.0, 1.0))
-                    .flex()
-                    .children(vec![
-                        example(
-                            "Blur 0",
-                            Shadow::base().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(0.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Blur 2",
-                            Shadow::base().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(2.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Blur 4",
-                            Shadow::base().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(4.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Blur 8",
-                            Shadow::base().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Blur 16",
-                            Shadow::base().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(16.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                    ]),
-                // Horizontal list of increasing spread radii
-                div()
-                    .border_b_1()
-                    .border_color(hsla(0.0, 0.0, 0.0, 1.0))
-                    .flex()
-                    .children(vec![
-                        example(
-                            "Spread 0",
-                            Shadow::base().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Spread 2",
-                            Shadow::base().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(2.),
-                            }]),
-                        ),
-                        example(
-                            "Spread 4",
-                            Shadow::base().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(4.),
-                            }]),
-                        ),
-                        example(
-                            "Spread 8",
-                            Shadow::base().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(8.),
-                            }]),
-                        ),
-                        example(
-                            "Spread 16",
-                            Shadow::base().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(16.),
-                            }]),
-                        ),
-                    ]),
-                // Square spread examples
-                div()
-                    .border_b_1()
-                    .border_color(hsla(0.0, 0.0, 0.0, 1.0))
-                    .flex()
-                    .children(vec![
-                        example(
-                            "Square Spread 0",
-                            Shadow::square().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Square Spread 8",
-                            Shadow::square().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(8.),
-                            }]),
-                        ),
-                        example(
-                            "Square Spread 16",
-                            Shadow::square().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(16.),
-                            }]),
-                        ),
-                    ]),
-                // Rounded large spread examples
-                div()
-                    .border_b_1()
-                    .border_color(hsla(0.0, 0.0, 0.0, 1.0))
-                    .flex()
-                    .children(vec![
-                        example(
-                            "Rounded Large Spread 0",
-                            Shadow::rounded_large().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Rounded Large Spread 8",
-                            Shadow::rounded_large().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(8.),
-                            }]),
-                        ),
-                        example(
-                            "Rounded Large Spread 16",
-                            Shadow::rounded_large().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.0, 0.0, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(16.),
-                            }]),
-                        ),
-                    ]),
-                // Directional shadows
-                div()
-                    .border_b_1()
-                    .border_color(hsla(0.0, 0.0, 0.0, 1.0))
-                    .flex()
-                    .children(vec![
-                        example(
-                            "Left",
-                            Shadow::base().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.5, 0.5, 0.3),
-                                offset: point(px(-8.), px(0.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Right",
-                            Shadow::base().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.5, 0.5, 0.3),
-                                offset: point(px(8.), px(0.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Top",
-                            Shadow::base().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.5, 0.5, 0.3),
-                                offset: point(px(0.), px(-8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Bottom",
-                            Shadow::base().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.5, 0.5, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                    ]),
-                // Square directional shadows
-                div()
-                    .border_b_1()
-                    .border_color(hsla(0.0, 0.0, 0.0, 1.0))
-                    .flex()
-                    .children(vec![
-                        example(
-                            "Square Left",
-                            Shadow::square().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.5, 0.5, 0.3),
-                                offset: point(px(-8.), px(0.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Square Right",
-                            Shadow::square().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.5, 0.5, 0.3),
-                                offset: point(px(8.), px(0.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Square Top",
-                            Shadow::square().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.5, 0.5, 0.3),
-                                offset: point(px(0.), px(-8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Square Bottom",
-                            Shadow::square().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.5, 0.5, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                    ]),
-                // Rounded large directional shadows
-                div()
-                    .border_b_1()
-                    .border_color(hsla(0.0, 0.0, 0.0, 1.0))
-                    .flex()
-                    .children(vec![
-                        example(
-                            "Rounded Large Left",
-                            Shadow::rounded_large().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.5, 0.5, 0.3),
-                                offset: point(px(-8.), px(0.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Rounded Large Right",
-                            Shadow::rounded_large().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.5, 0.5, 0.3),
-                                offset: point(px(8.), px(0.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Rounded Large Top",
-                            Shadow::rounded_large().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.5, 0.5, 0.3),
-                                offset: point(px(0.), px(-8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                        example(
-                            "Rounded Large Bottom",
-                            Shadow::rounded_large().shadow(vec![BoxShadow {
-                                color: hsla(0.0, 0.5, 0.5, 0.3),
-                                offset: point(px(0.), px(8.)),
-                                blur_radius: px(8.),
-                                spread_radius: px(0.),
-                            }]),
-                        ),
-                    ]),
-                // Multiple shadows for different shapes
-                div()
-                    .border_b_1()
-                    .border_color(hsla(0.0, 0.0, 0.0, 1.0))
-                    .flex()
-                    .children(vec![
-                        example(
-                            "Circle Multiple",
-                            Shadow::base().shadow(vec![
-                                BoxShadow {
-                                    color: hsla(0.0 / 360., 1.0, 0.5, 0.3), // Red
-                                    offset: point(px(0.), px(-12.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(2.),
-                                },
-                                BoxShadow {
-                                    color: hsla(60.0 / 360., 1.0, 0.5, 0.3), // Yellow
-                                    offset: point(px(12.), px(0.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(2.),
-                                },
-                                BoxShadow {
-                                    color: hsla(120.0 / 360., 1.0, 0.5, 0.3), // Green
-                                    offset: point(px(0.), px(12.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(2.),
-                                },
-                                BoxShadow {
-                                    color: hsla(240.0 / 360., 1.0, 0.5, 0.3), // Blue
-                                    offset: point(px(-12.), px(0.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(2.),
-                                },
-                            ]),
-                        ),
-                        example(
-                            "Square Multiple",
-                            Shadow::square().shadow(vec![
-                                BoxShadow {
-                                    color: hsla(0.0 / 360., 1.0, 0.5, 0.3), // Red
-                                    offset: point(px(0.), px(-12.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(2.),
-                                },
-                                BoxShadow {
-                                    color: hsla(60.0 / 360., 1.0, 0.5, 0.3), // Yellow
-                                    offset: point(px(12.), px(0.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(2.),
-                                },
-                                BoxShadow {
-                                    color: hsla(120.0 / 360., 1.0, 0.5, 0.3), // Green
-                                    offset: point(px(0.), px(12.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(2.),
-                                },
-                                BoxShadow {
-                                    color: hsla(240.0 / 360., 1.0, 0.5, 0.3), // Blue
-                                    offset: point(px(-12.), px(0.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(2.),
-                                },
-                            ]),
-                        ),
-                        example(
-                            "Rounded Large Multiple",
-                            Shadow::rounded_large().shadow(vec![
-                                BoxShadow {
-                                    color: hsla(0.0 / 360., 1.0, 0.5, 0.3), // Red
-                                    offset: point(px(0.), px(-12.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(2.),
-                                },
-                                BoxShadow {
-                                    color: hsla(60.0 / 360., 1.0, 0.5, 0.3), // Yellow
-                                    offset: point(px(12.), px(0.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(2.),
-                                },
-                                BoxShadow {
-                                    color: hsla(120.0 / 360., 1.0, 0.5, 0.3), // Green
-                                    offset: point(px(0.), px(12.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(2.),
-                                },
-                                BoxShadow {
-                                    color: hsla(240.0 / 360., 1.0, 0.5, 0.3), // Blue
-                                    offset: point(px(-12.), px(0.)),
-                                    blur_radius: px(8.),
-                                    spread_radius: px(2.),
-                                },
-                            ]),
-                        ),
-                    ]),
-            ]))
-    }
-}
+<span class="keyword">impl</span> <span class="type">Render</span> <span class="keyword">for</span> <span class="type">Shadow</span> <span class="punctuation">{</span>
+    <span class="keyword">fn</span> <span class="function">render</span><span class="punctuation">(</span><span class="operator">&amp;</span><span class="keyword">mut</span> <span class="variable">self</span><span class="punctuation">,</span> <span class="variable">_window</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Window</span><span class="punctuation">,</span> <span class="variable">_cx</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">Context</span><span class="punctuation">&lt;</span><span class="type">Self</span><span class="punctuation">&gt;)</span> -&gt; <span class="keyword">impl</span> <span class="type">IntoElement</span> <span class="punctuation">{</span>
+        <span class="function">div</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">id</span><span class="punctuation">(</span><span class="string">&quot;shadow-example&quot;</span><span class="punctuation">)</span>
+            <span class="punctuation">.</span><span class="property">overflow_y_scroll</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">bg</span><span class="punctuation">(</span><span class="function">rgb</span><span class="punctuation">(</span><span class="constant">0xffffff</span><span class="punctuation">))</span>
+            <span class="punctuation">.</span><span class="property">size_full</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">text_xs</span><span class="punctuation">()</span>
+            <span class="punctuation">.</span><span class="property">child</span><span class="punctuation">(</span><span class="function">div</span><span class="punctuation">().</span><span class="property">flex</span><span class="punctuation">().</span><span class="property">flex_col</span><span class="punctuation">().</span><span class="property">w_full</span><span class="punctuation">().</span><span class="property">children</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span>
+                <span class="function">div</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_b_1</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">))</span>
+                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">flex_row</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">children</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Square&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">square</span><span class="punctuation">()</span>
+                                <span class="punctuation">.</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                                <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Rounded 4&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">rounded_small</span><span class="punctuation">()</span>
+                                <span class="punctuation">.</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                                <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Rounded 8&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">rounded_medium</span><span class="punctuation">()</span>
+                                <span class="punctuation">.</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                                <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Rounded 16&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">rounded_large</span><span class="punctuation">()</span>
+                                <span class="punctuation">.</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                                <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Circle&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">()</span>
+                                <span class="punctuation">.</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                                <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                    <span class="punctuation">]),</span>
+                <span class="function">div</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_b_1</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">))</span>
+                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">w_full</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">children</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span>
+                        <span class="function">example</span><span class="punctuation">(</span><span class="string">&quot;None&quot;</span><span class="punctuation">,</span> <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">()),</span>
+                        <span class="comment">// 2Xsmall shadow</span>
+                        <span class="function">example</span><span class="punctuation">(</span><span class="string">&quot;2X Small&quot;</span><span class="punctuation">,</span> <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow_2xs</span><span class="punctuation">()),</span>
+                        <span class="comment">// Xsmall shadow</span>
+                        <span class="function">example</span><span class="punctuation">(</span><span class="string">&quot;Extra Small&quot;</span><span class="punctuation">,</span> <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow_xs</span><span class="punctuation">()),</span>
+                        <span class="comment">// Small shadow</span>
+                        <span class="function">example</span><span class="punctuation">(</span><span class="string">&quot;Small&quot;</span><span class="punctuation">,</span> <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow_sm</span><span class="punctuation">()),</span>
+                        <span class="comment">// Medium shadow</span>
+                        <span class="function">example</span><span class="punctuation">(</span><span class="string">&quot;Medium&quot;</span><span class="punctuation">,</span> <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow_md</span><span class="punctuation">()),</span>
+                        <span class="comment">// Large shadow</span>
+                        <span class="function">example</span><span class="punctuation">(</span><span class="string">&quot;Large&quot;</span><span class="punctuation">,</span> <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow_lg</span><span class="punctuation">()),</span>
+                        <span class="function">example</span><span class="punctuation">(</span><span class="string">&quot;Extra Large&quot;</span><span class="punctuation">,</span> <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow_xl</span><span class="punctuation">()),</span>
+                        <span class="function">example</span><span class="punctuation">(</span><span class="string">&quot;2X Large&quot;</span><span class="punctuation">,</span> <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow_2xl</span><span class="punctuation">()),</span>
+                    <span class="punctuation">]),</span>
+                <span class="comment">// Horizontal list of increasing blur radii</span>
+                <span class="function">div</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_b_1</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">))</span>
+                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">children</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Blur 0&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Blur 2&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">2.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Blur 4&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">4.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Blur 8&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Blur 16&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">16.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                    <span class="punctuation">]),</span>
+                <span class="comment">// Horizontal list of increasing spread radii</span>
+                <span class="function">div</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_b_1</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">))</span>
+                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">children</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Spread 0&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Spread 2&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">2.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Spread 4&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">4.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Spread 8&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Spread 16&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">16.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                    <span class="punctuation">]),</span>
+                <span class="comment">// Square spread examples</span>
+                <span class="function">div</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_b_1</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">))</span>
+                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">children</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Square Spread 0&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">square</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Square Spread 8&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">square</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Square Spread 16&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">square</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">16.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                    <span class="punctuation">]),</span>
+                <span class="comment">// Rounded large spread examples</span>
+                <span class="function">div</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_b_1</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">))</span>
+                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">children</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Rounded Large Spread 0&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">rounded_large</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Rounded Large Spread 8&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">rounded_large</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Rounded Large Spread 16&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">rounded_large</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">16.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                    <span class="punctuation">]),</span>
+                <span class="comment">// Directional shadows</span>
+                <span class="function">div</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_b_1</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">))</span>
+                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">children</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Left&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span>-<span class="constant">8.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Right&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Top&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span>-<span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Bottom&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                    <span class="punctuation">]),</span>
+                <span class="comment">// Square directional shadows</span>
+                <span class="function">div</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_b_1</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">))</span>
+                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">children</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Square Left&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">square</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span>-<span class="constant">8.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Square Right&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">square</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Square Top&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">square</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span>-<span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Square Bottom&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">square</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                    <span class="punctuation">]),</span>
+                <span class="comment">// Rounded large directional shadows</span>
+                <span class="function">div</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_b_1</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">))</span>
+                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">children</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Rounded Large Left&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">rounded_large</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span>-<span class="constant">8.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Rounded Large Right&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">rounded_large</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Rounded Large Top&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">rounded_large</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span>-<span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Rounded Large Bottom&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">rounded_large</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span><span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span>
+                                <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">)),</span>
+                                <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span>
+                            <span class="punctuation">}]),</span>
+                        <span class="punctuation">),</span>
+                    <span class="punctuation">]),</span>
+                <span class="comment">// Multiple shadows for different shapes</span>
+                <span class="function">div</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_b_1</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">border_color</span><span class="punctuation">(</span><span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">0.0</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">))</span>
+                    <span class="punctuation">.</span><span class="property">flex</span><span class="punctuation">()</span>
+                    <span class="punctuation">.</span><span class="property">children</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Circle Multiple&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">base</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span>
+                                <span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span> / <span class="constant">360.</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span> <span class="comment">// Red</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span>-<span class="constant">12.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">2.</span><span class="punctuation">),</span>
+                                <span class="punctuation">},</span>
+                                <span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">60.0</span> / <span class="constant">360.</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span> <span class="comment">// Yellow</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">12.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">2.</span><span class="punctuation">),</span>
+                                <span class="punctuation">},</span>
+                                <span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">120.0</span> / <span class="constant">360.</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span> <span class="comment">// Green</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">12.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">2.</span><span class="punctuation">),</span>
+                                <span class="punctuation">},</span>
+                                <span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">240.0</span> / <span class="constant">360.</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span> <span class="comment">// Blue</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span>-<span class="constant">12.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">2.</span><span class="punctuation">),</span>
+                                <span class="punctuation">},</span>
+                            <span class="punctuation">]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Square Multiple&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">square</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span>
+                                <span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span> / <span class="constant">360.</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span> <span class="comment">// Red</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span>-<span class="constant">12.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">2.</span><span class="punctuation">),</span>
+                                <span class="punctuation">},</span>
+                                <span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">60.0</span> / <span class="constant">360.</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span> <span class="comment">// Yellow</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">12.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">2.</span><span class="punctuation">),</span>
+                                <span class="punctuation">},</span>
+                                <span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">120.0</span> / <span class="constant">360.</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span> <span class="comment">// Green</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">12.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">2.</span><span class="punctuation">),</span>
+                                <span class="punctuation">},</span>
+                                <span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">240.0</span> / <span class="constant">360.</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span> <span class="comment">// Blue</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span>-<span class="constant">12.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">2.</span><span class="punctuation">),</span>
+                                <span class="punctuation">},</span>
+                            <span class="punctuation">]),</span>
+                        <span class="punctuation">),</span>
+                        <span class="function">example</span><span class="punctuation">(</span>
+                            <span class="string">&quot;Rounded Large Multiple&quot;</span><span class="punctuation">,</span>
+                            <span class="constructor">Shadow</span><span class="punctuation">::</span><span class="function">rounded_large</span><span class="punctuation">().</span><span class="property">shadow</span><span class="punctuation">(</span><span class="macro">vec!</span><span class="punctuation">[</span>
+                                <span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">0.0</span> / <span class="constant">360.</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span> <span class="comment">// Red</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span>-<span class="constant">12.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">2.</span><span class="punctuation">),</span>
+                                <span class="punctuation">},</span>
+                                <span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">60.0</span> / <span class="constant">360.</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span> <span class="comment">// Yellow</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">12.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">2.</span><span class="punctuation">),</span>
+                                <span class="punctuation">},</span>
+                                <span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">120.0</span> / <span class="constant">360.</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span> <span class="comment">// Green</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">12.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">2.</span><span class="punctuation">),</span>
+                                <span class="punctuation">},</span>
+                                <span class="type">BoxShadow</span> <span class="punctuation">{</span>
+                                    <span class="property">color</span><span class="punctuation">:</span> <span class="function">hsla</span><span class="punctuation">(</span><span class="constant">240.0</span> / <span class="constant">360.</span><span class="punctuation">,</span> <span class="constant">1.0</span><span class="punctuation">,</span> <span class="constant">0.5</span><span class="punctuation">,</span> <span class="constant">0.3</span><span class="punctuation">),</span> <span class="comment">// Blue</span>
+                                    <span class="property">offset</span><span class="punctuation">:</span> <span class="function">point</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span>-<span class="constant">12.</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">0.</span><span class="punctuation">)),</span>
+                                    <span class="property">blur_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">8.</span><span class="punctuation">),</span>
+                                    <span class="property">spread_radius</span><span class="punctuation">:</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">2.</span><span class="punctuation">),</span>
+                                <span class="punctuation">},</span>
+                            <span class="punctuation">]),</span>
+                        <span class="punctuation">),</span>
+                    <span class="punctuation">]),</span>
+            <span class="punctuation">]))</span>
+    <span class="punctuation">}</span>
+<span class="punctuation">}</span>
 
-fn main() {
-    Application::new().run(|cx: &mut App| {
-        let bounds = Bounds::centered(None, size(px(1000.0), px(800.0)), cx);
-        cx.open_window(
-            WindowOptions {
-                window_bounds: Some(WindowBounds::Windowed(bounds)),
-                ..Default::default()
-            },
-            |_, cx| cx.new(|_| Shadow {}),
-        )
-        .unwrap();
+<span class="keyword">fn</span> <span class="function">main</span><span class="punctuation">()</span> <span class="punctuation">{</span>
+    <span class="constructor">Application</span><span class="punctuation">::</span><span class="function">new</span><span class="punctuation">().</span><span class="property">run</span><span class="punctuation">(</span>|<span class="variable">cx</span><span class="punctuation">:</span> <span class="operator">&amp;</span><span class="keyword">mut</span> <span class="type">App</span>| <span class="punctuation">{</span>
+        <span class="keyword">let</span> bounds = <span class="constructor">Bounds</span><span class="punctuation">::</span><span class="function">centered</span><span class="punctuation">(</span><span class="constructor">None</span><span class="punctuation">,</span> <span class="function">size</span><span class="punctuation">(</span><span class="function">px</span><span class="punctuation">(</span><span class="constant">1000.0</span><span class="punctuation">),</span> <span class="function">px</span><span class="punctuation">(</span><span class="constant">800.0</span><span class="punctuation">)),</span> cx<span class="punctuation">);</span>
+        cx<span class="punctuation">.</span><span class="property">open_window</span><span class="punctuation">(</span>
+            <span class="type">WindowOptions</span> <span class="punctuation">{</span>
+                <span class="property">window_bounds</span><span class="punctuation">:</span> <span class="constructor">Some</span><span class="punctuation">(</span><span class="constructor">WindowBounds</span><span class="punctuation">::</span><span class="constructor">Windowed</span><span class="punctuation">(</span>bounds<span class="punctuation">)),</span>
+                ..<span class="constructor">Default</span><span class="punctuation">::</span><span class="function">default</span><span class="punctuation">()</span>
+            <span class="punctuation">},</span>
+            |_<span class="punctuation">,</span> cx| cx<span class="punctuation">.</span><span class="property">new</span><span class="punctuation">(</span>|_| <span class="type">Shadow</span> <span class="punctuation">{}),</span>
+        <span class="punctuation">)</span>
+        <span class="punctuation">.</span><span class="property">unwrap</span><span class="punctuation">();</span>
 
-        cx.activate(true);
-    });
-}
-
-```
+        cx<span class="punctuation">.</span><span class="property">activate</span><span class="punctuation">(</span><span class="constant">true</span><span class="punctuation">);</span>
+    <span class="punctuation">});</span>
+<span class="punctuation">}</span></code></pre>

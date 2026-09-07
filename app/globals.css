@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    background-color: #0a0a0b;
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: #0a0a0b;
+    color: #f6f6f1;
+    font-feature-settings: "ss01" 1, "cv01" 1;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: #ffff00;
+    color: #0a0a0b;
+  }
+
+  a {
+    color: inherit;
+  }
+}
+
+@layer utilities {
+  .container-page {
+    max-width: 1120px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .bg-dotgrid {
+    background-image: radial-gradient(circle, #202023 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}

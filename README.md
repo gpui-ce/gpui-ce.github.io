@@ -1,4 +1,4 @@
-# gpui-ci.github.io
+# gpui-ce.github.io
 
 Marketing site for GPUI-CE, built with Next.js and exported as static HTML for GitHub Pages.
 
